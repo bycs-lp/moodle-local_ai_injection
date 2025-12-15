@@ -1,0 +1,47 @@
+/**
+ * AI Alt Text injection styles.
+ *
+ * @package    aiinjection_alttext
+ * @copyright  ISB Bayern, 2025
+ * @author     Dr. Peter Mayer
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+/* AI alttext button container */
+.ai-alttext-container {
+    border-top: 1px solid #dee2e6;
+    padding-top: 1rem;
+}
+
+/* AI alttext generation button */
+.ai-alttext-button {
+    width: 100%;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.ai-alttext-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.ai-alttext-button .fa-magic {
+    color: #6c757d;
+}
+
+.ai-alttext-button .fa-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Responsive adjustments for mobile */
+@media (max-width: 768px) {
+    .ai-alttext-button {
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+    }
+}

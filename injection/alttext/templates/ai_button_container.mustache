@@ -1,0 +1,42 @@
+{{!
+This file is part of Moodle - http://moodle.org/
+
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+@template aiinjection_alttext/ai_button_container
+
+AI Alt Text Button Container Template
+
+Classes required for JS:
+* ai-alttext-button - Main button for AI alt text generation
+
+Data attributes required for JS:
+* data-image-url - URL of the image to generate alt text for
+
+Context variables required for this template:
+* isLoading (optional) - Boolean flag to show loading state
+}}
+
+{{#isloading}}
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" disabled>
+    {{#pix}}y/loading, core {{/pix}} {{#if loadingText}}{{loadingText}}{{else}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/if}}
+</button>
+{{/isloading}}
+
+{{^isloading}}
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100">
+    {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+</button>
+{{/isloading}}
