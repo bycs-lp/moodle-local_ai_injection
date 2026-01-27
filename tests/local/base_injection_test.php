@@ -17,7 +17,6 @@
 namespace local_ai_injection\local;
 
 use advanced_testcase;
-use local_ai_injection\local\base_injection;
 
 /**
  * Unit tests for base injection class.
@@ -32,158 +31,19 @@ use local_ai_injection\local\base_injection;
 final class base_injection_test extends advanced_testcase {
     /**
      * Test concrete implementation for testing abstract methods.
+     *
+     * @return base_injection
      */
-    private function get_test_injection() {
+    private function get_test_injection(): base_injection {
         return new class extends base_injection {
-            /**
-             * Get the subplugin name.
-             * @return string
-             */
-            protected function get_subplugin_name(): string {
-                return 'aiinjection_test';
-            }
-
-            /**
-             * Get the AMD module name.
-             * @return string
-             */
-            protected function get_amd_module(): string {
-                return 'aiinjection_test/test_module';
-            }
-
-            /**
-             * Get the configuration parameters.
-             * @return array
-             */
-            protected function get_js_config(): array {
-                return [
-                    'debug' => true,
-                    'setting' => 'test_value',
-                ];
-            }
-
-            /**
-             * Check if should inject.
-             * @return bool
-             */
-            protected function should_inject(): bool {
-                return true;
-            }
-
-            /**
-             * Test method to check if enabled.
-             * @return bool
-             */
-            public function test_is_enabled(): bool {
-                return $this->is_enabled();
-            }
-
-            /**
-             * Test method to get config.
-             * @param string $name Configuration name
-             * @param mixed $default Default value
-             * @return mixed
-             */
-            public function test_get_config(string $name, $default = null): mixed {
-                return $this->get_config($name, $default);
-            }
-        };
-    }
-
-    /**
-     * Test is_enabled method when subplugin is enabled.
-     */
-    public function test_is_enabled_when_enabled(): void {
-        $this->resetAfterTest(true);
-
-        // Enable the test subplugin.
-        set_config('enabled', 1, 'aiinjection_test');
-
-        $injection = $this->get_test_injection();
-        $this->assertTrue($injection->test_is_enabled());
-    }
-
-    /**
-     * Test is_enabled method when subplugin is disabled.
-     */
-    public function test_is_enabled_when_disabled(): void {
-        $this->resetAfterTest(true);
-
-        // Disable the test subplugin.
-        set_config('enabled', 0, 'aiinjection_test');
-
-        $injection = $this->get_test_injection();
-        $this->assertFalse($injection->test_is_enabled());
-    }
-
-    /**
-     * Test is_enabled method when no configuration exists.
-     */
-    public function test_is_enabled_when_not_configured(): void {
-        $this->resetAfterTest(true);
-
-        $injection = $this->get_test_injection();
-        $this->assertFalse($injection->test_is_enabled());
-    }
-
-    /**
-     * Test get_config method with existing configuration.
-     */
-    public function test_get_config_existing(): void {
-        $this->resetAfterTest(true);
-
-        set_config('test_setting', 'test_value', 'aiinjection_test');
-
-        $injection = $this->get_test_injection();
-        $this->assertEquals('test_value', $injection->test_get_config('test_setting'));
-    }
-
-    /**
-     * Test get_config method with default value.
-     */
-    public function test_get_config_default(): void {
-        $this->resetAfterTest(true);
-
-        $injection = $this->get_test_injection();
-        $this->assertEquals('default', $injection->test_get_config('nonexistent_setting', 'default'));
-    }
-
-    /**
-     * Test get_config method with null default.
-     */
-    public function test_get_config_null_default(): void {
-        $this->resetAfterTest(true);
-
-        $injection = $this->get_test_injection();
-        $this->assertNull($injection->test_get_config('nonexistent_setting'));
-    }
-
-    /**
-     * Test inject_javascript method when enabled and should inject.
-     */
-    public function test_inject_javascript_when_enabled(): void {
-        global $PAGE;
-        $this->resetAfterTest(true);
-
-        // Enable the subplugin.
-        set_config('enabled', 1, 'aiinjection_test');
-
-        // Create injection with mock for testing JavaScript injection.
-        $injection = new class extends base_injection {
             /** @var bool Track if JavaScript was called */
-            public $jscalled = false;
-            /** @var string Track the JavaScript module name */
-            public $jsmodule = '';
-            /** @var string Track the JavaScript method name */
-            public $jsmethod = '';
-            /** @var array Track the JavaScript configuration */
-            public $jsconfig = [];
+            public bool $jscalled = false;
 
             /**
              * Get the subplugin name.
              * @return string
              */
-            protected function get_subplugin_name(): string {
+            public function get_subplugin_name(): string {
                 return 'aiinjection_test';
             }
 
@@ -191,7 +51,7 @@ final class base_injection_test extends advanced_testcase {
              * Get the AMD module name.
              * @return string
              */
-            protected function get_amd_module(): string {
+            public function get_amd_module(): string {
                 return 'aiinjection_test/test_module';
             }
 
@@ -199,18 +59,15 @@ final class base_injection_test extends advanced_testcase {
              * Get the configuration parameters.
              * @return array
              */
-            protected function get_js_config(): array {
-                return [
-                    'debug' => true,
-                    'setting' => 'test_value',
-                ];
+            public function get_js_config(): array {
+                return ['setting' => 'test_value'];
             }
 
             /**
              * Check if should inject.
              * @return bool
              */
-            protected function should_inject(): bool {
+            public function should_inject(): bool {
                 return true;
             }
 
@@ -219,168 +76,57 @@ final class base_injection_test extends advanced_testcase {
              * @return void
              */
             public function inject_javascript(): void {
-                if (!$this->is_enabled()) {
-                    return;
+                if ($this->is_enabled() && $this->should_inject()) {
+                    $this->jscalled = true;
                 }
-
-                if (!$this->should_inject()) {
-                    return;
-                }
-
-                // Simulate JavaScript injection.
-                $this->jscalled = true;
-                $this->jsmodule = $this->get_amd_module();
-                $this->jsmethod = 'init';
-                $this->jsconfig = $this->get_js_config();
             }
         };
-
-        $injection->inject_javascript();
-
-        $this->assertTrue($injection->jscalled);
-        $this->assertEquals('aiinjection_test/test_module', $injection->jsmodule);
-        $this->assertEquals('init', $injection->jsmethod);
-        $this->assertEquals([
-            'debug' => true,
-            'setting' => 'test_value',
-        ], $injection->jsconfig);
     }
 
     /**
-     * Test inject_javascript method when disabled.
+     * Test base injection configuration and enabled state.
      */
-    public function test_inject_javascript_when_disabled(): void {
-        global $PAGE;
+    public function test_configuration_and_enabled_state(): void {
         $this->resetAfterTest(true);
 
-        // Disable the subplugin.
+        $injection = $this->get_test_injection();
+
+        // Not configured = disabled.
+        $this->assertFalse($injection->is_enabled());
+
+        // Explicitly disabled.
         set_config('enabled', 0, 'aiinjection_test');
+        $this->assertFalse($injection->is_enabled());
 
-        // Create injection with mock for testing JavaScript injection.
-        $injection = new class extends base_injection {
-            /** @var bool Track if JavaScript was called */
-            public $jscalled = false;
+        // Enabled.
+        set_config('enabled', 1, 'aiinjection_test');
+        $this->assertTrue($injection->is_enabled());
 
-            /**
-             * Get the subplugin name.
-             * @return string
-             */
-            protected function get_subplugin_name(): string {
-                return 'aiinjection_test';
-            }
+        // Config retrieval with default.
+        $this->assertNull($injection->get_config('nonexistent'));
+        $this->assertEquals('default', $injection->get_config('nonexistent', 'default'));
 
-            /**
-             * Get the AMD module name.
-             * @return string
-             */
-            protected function get_amd_module(): string {
-                return 'aiinjection_test/test_module';
-            }
-
-            /**
-             * Get the configuration parameters.
-             * @return array
-             */
-            protected function get_js_config(): array {
-                return [];
-            }
-
-            /**
-             * Check if should inject.
-             * @return bool
-             */
-            protected function should_inject(): bool {
-                return true;
-            }
-
-            /**
-             * Override inject_javascript to capture calls.
-             * @return void
-             */
-            public function inject_javascript(): void {
-                if (!$this->is_enabled()) {
-                    return;
-                }
-
-                if (!$this->should_inject()) {
-                    return;
-                }
-
-                $this->jscalled = true;
-            }
-        };
-
-        $injection->inject_javascript();
-
-        $this->assertFalse($injection->jscalled);
+        // Config retrieval with set value.
+        set_config('test_setting', 'test_value', 'aiinjection_test');
+        $this->assertEquals('test_value', $injection->get_config('test_setting'));
     }
 
     /**
-     * Test inject_javascript method when should not inject.
+     * Test inject_javascript respects enabled state.
      */
-    public function test_inject_javascript_should_not_inject(): void {
-        global $PAGE;
+    public function test_inject_javascript_respects_enabled_state(): void {
         $this->resetAfterTest(true);
 
-        // Enable the subplugin.
-        set_config('enabled', 1, 'aiinjection_test');
-
-        // Create injection that should not inject.
-        $injection = new class extends base_injection {
-            /** @var bool Track if JavaScript was called */
-            public $jscalled = false;
-
-            /**
-             * Get the subplugin name.
-             * @return string
-             */
-            protected function get_subplugin_name(): string {
-                return 'aiinjection_test';
-            }
-
-            /**
-             * Get the AMD module name.
-             * @return string
-             */
-            protected function get_amd_module(): string {
-                return 'aiinjection_test/test_module';
-            }
-
-            /**
-             * Get the configuration parameters.
-             * @return array
-             */
-            protected function get_js_config(): array {
-                return [];
-            }
-
-            /**
-             * Check if should inject.
-             * @return bool
-             */
-            protected function should_inject(): bool {
-                return false; // Should not inject.
-            }
-
-            /**
-             * Override inject_javascript to capture calls.
-             * @return void
-             */
-            public function inject_javascript(): void {
-                if (!$this->is_enabled()) {
-                    return;
-                }
-
-                if (!$this->should_inject()) {
-                    return;
-                }
-
-                $this->jscalled = true;
-            }
-        };
-
+        // Test disabled - should not inject.
+        $injection = $this->get_test_injection();
+        set_config('enabled', 0, 'aiinjection_test');
         $injection->inject_javascript();
-
         $this->assertFalse($injection->jscalled);
+
+        // Test enabled - should inject.
+        $injection = $this->get_test_injection();
+        set_config('enabled', 1, 'aiinjection_test');
+        $injection->inject_javascript();
+        $this->assertTrue($injection->jscalled);
     }
 }

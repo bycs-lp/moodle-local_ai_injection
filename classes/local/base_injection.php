@@ -30,28 +30,28 @@ abstract class base_injection {
      *
      * @return string
      */
-    abstract protected function get_subplugin_name(): string;
+    abstract public function get_subplugin_name(): string;
 
     /**
      * Get the AMD module name for this subplugin.
      *
      * @return string
      */
-    abstract protected function get_amd_module(): string;
+    abstract public function get_amd_module(): string;
 
     /**
      * Get the configuration parameters for the JavaScript module.
      *
      * @return array
      */
-    abstract protected function get_js_config(): array;
+    abstract public function get_js_config(): array;
 
     /**
      * Check if this injection should be active on the current page.
      *
      * @return bool
      */
-    abstract protected function should_inject(): bool;
+    abstract public function should_inject(): bool;
 
     /**
      * Inject JavaScript into the page.
@@ -85,7 +85,7 @@ abstract class base_injection {
      *
      * @return bool
      */
-    protected function is_enabled(): bool {
+    public function is_enabled(): bool {
         return (bool) get_config($this->get_subplugin_name(), 'enabled');
     }
 
@@ -96,7 +96,7 @@ abstract class base_injection {
      * @param mixed $default Default value
      * @return mixed
      */
-    protected function get_config(string $name, $default = null) {
+    public function get_config(string $name, $default = null) {
         return get_config($this->get_subplugin_name(), $name) ?: $default;
     }
 }

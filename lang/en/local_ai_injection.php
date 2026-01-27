@@ -24,6 +24,7 @@
  */
 
 $string['ai_injection:manage'] = 'Manage AI Injection';
+$string['aiinjectionplugins'] = 'AI injection plugins';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';
 $string['enabled'] = 'Enabled';
@@ -34,3 +35,5 @@ $string['pluginname'] = 'AI Injection';
 $string['privacy:metadata'] = 'The AI Injection plugin acts as a framework for subplugins and does not store any personal data itself.';
 $string['subplugins'] = 'Available AI Injection Subplugins';
 $string['subplugins_info'] = 'This framework plugin enables AI-powered subplugins to inject JavaScript into the page footer. Below is a list of installed subplugins:';
+$string['subplugintype_aiinjection'] = 'AI injection';
+$string['subplugintype_aiinjection_plural'] = 'AI injections';

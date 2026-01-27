@@ -26,12 +26,18 @@ Data attributes required for JS:
 * data-image-url - URL of the image to generate alt text for
 
 Context variables required for this template:
-* isLoading (optional) - Boolean flag to show loading state
+* isloading (optional) - Boolean flag to show loading state
+* loadingtext (optional) - Custom loading text
+
+Example context (json):
+{
+    "isloading": false
+}
 }}
 
 {{#isloading}}
 <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" disabled>
-    {{#pix}}y/loading, core {{/pix}} {{#if loadingText}}{{loadingText}}{{else}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/if}}
+    {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
 </button>
 {{/isloading}}
 

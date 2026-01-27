@@ -31,23 +31,6 @@ if ($hassiteconfig) {
         get_string('pluginname', 'aiinjection_alttext')
     );
 
-    // Enable/disable setting.
-    $settings->add(new admin_setting_configcheckbox(
-        'aiinjection_alttext/enabled',
-        get_string('enabled', 'aiinjection_alttext'),
-        get_string('plugin_desc', 'aiinjection_alttext'),
-        1
-    ));
-
-    // API key setting.
-    $settings->add(new admin_setting_configtext(
-        'aiinjection_alttext/apikey',
-        get_string('apikey', 'aiinjection_alttext'),
-        get_string('apikey_desc', 'aiinjection_alttext'),
-        '',
-        PARAM_TEXT
-    ));
-
     // CSS selector setting.
     $settings->add(new admin_setting_configtext(
         'aiinjection_alttext/selector',
@@ -56,6 +39,4 @@ if ($hassiteconfig) {
         'img:not([alt]), img[alt=""]',
         PARAM_TEXT
     ));
-
-    $ADMIN->add('localplugins', $settings);
 }

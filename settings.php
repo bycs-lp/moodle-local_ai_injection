@@ -26,25 +26,41 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    // Settings page with per-subplugin toggles; restricted by capability.
-    $settings = new admin_settingpage(
-        'local_ai_injection',
-        get_string('pluginname', 'local_ai_injection'),
+    // Create category for AI injection settings.
+    $aiinjectioncategory = new admin_category(
+        'local_ai_injection_settings',
+        new lang_string('pluginname', 'local_ai_injection')
+    );
+    $ADMIN->add('localplugins', $aiinjectioncategory);
+
+    // Subplugin management page using core plugin_management_table.
+    $aiinjectionsettingpage = new admin_settingpage(
+        'aiinjectionpluginsmanagement',
+        get_string('subplugintype_aiinjection_plural', 'local_ai_injection'),
         'local/ai_injection:manage'
     );
+    $aiinjectionsettingpage->add(
+        new \core_admin\admin\admin_setting_plugin_manager(
+            'aiinjection',
+            \local_ai_injection\table\aiinjection_admin_table::class,
+            'aiinjection_management',
+            get_string('subplugintype_aiinjection_plural', 'local_ai_injection')
+        )
+    );
+    $ADMIN->add('local_ai_injection_settings', $aiinjectionsettingpage);
 
-    $pluginmanager = new \local_ai_injection\plugin_manager();
-    $subplugins = $pluginmanager::get_available_plugins();
+    // Add category for subplugin settings.
+    $ADMIN->add(
+        'local_ai_injection_settings',
+        new admin_category(
+            'aiinjectionplugins',
+            new lang_string('aiinjectionplugins', 'local_ai_injection')
+        )
+    );
 
-    foreach ($subplugins as $name => $path) {
-        $component = 'aiinjection_' . $name;
-        $componentname = get_string('pluginname', $component);
-        $componentdesc = get_string('plugin_desc', $component);
-        $settingname = $component . '/enabled';
-        $visiblename = get_string('enable_subplugin', 'local_ai_injection', $componentname);
-        $description = $componentdesc;
-        $settings->add(new admin_setting_configcheckbox($settingname, $visiblename, $description, 0));
+    // Load settings from all subplugins.
+    $plugins = \core_plugin_manager::instance()->get_plugins_of_type('aiinjection');
+    foreach ($plugins as $plugin) {
+        $plugin->load_settings($ADMIN, 'aiinjectionplugins', $hassiteconfig);
     }
-
-    $ADMIN->add('localplugins', $settings);
 }

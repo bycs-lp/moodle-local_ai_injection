@@ -25,10 +25,7 @@
 
 $string['aiprompt'] = 'Generate a precise German alt text for the image. Describe briefly and factually what is seen in the image. The alt text should be understandable for visually impaired people.';
 $string['alttext:use'] = 'Use AI Alt Text button';
-$string['apikey'] = 'AI Service API Key';
-$string['apikey_desc'] = 'API key for the AI service used to generate alt text';
 $string['apply'] = 'Apply';
-$string['enabled'] = 'Enable AI Alt Text';
 $string['generatealttext'] = 'Generate Image Description';
 $string['generatedalttext'] = 'Generated Image Description';
 $string['generateerror'] = 'Error generating image description. Please try again.';

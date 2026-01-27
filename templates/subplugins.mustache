@@ -17,8 +17,22 @@
 {{!
     @template local_ai_injection/subplugins
     Template to render the list of AI Injection subplugins and their status.
+
+    Example context (json):
+    {
+        "installedsubplugins": "Installed Subplugins",
+        "subplugins": [
+            {
+                "component": "aiinjection_alttext",
+                "statusclass": "text-success",
+                "status": "Enabled",
+                "pathlabel": "Path",
+                "path": "/local/ai_injection/injection/alttext"
+            }
+        ]
+    }
 }}
-<h3>{{installedsubplugins}}</h3>
+<h3>{{#installedsubplugins}}{{installedsubplugins}}{{/installedsubplugins}}{{^installedsubplugins}}Installed Subplugins{{/installedsubplugins}}</h3>
 <ul>
     {{#subplugins}}
     <li>

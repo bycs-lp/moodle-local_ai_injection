@@ -27,8 +27,6 @@ import {getString} from 'core/str';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 
-let debugMode = false;
-
 /**
  * Convert image to base64
  * @param {string} imageUrl Image URL to convert
@@ -85,10 +83,6 @@ const generateAltText = async(imageUrl) => {
         ]);
 
         const result = await makeRequest('itt', prompt, 'aiinjection_alttext', 0, {image: imageBase64});
-        if (debugMode) {
-            Log.debug('AI response:', result);
-        }
-
         return extractAltText(Array.isArray(result) ? result[0] : result);
     } catch (error) {
         Log.error('AI generation failed:', error);
@@ -120,9 +114,6 @@ const handleButtonClick = async (event) => {
             textarea.value = altText;
             textarea.dispatchEvent(new Event("input", { bubbles: true }));
             textarea.dispatchEvent(new Event("change", { bubbles: true }));
-            if (debugMode) {
-                Log.debug("Alt text inserted:", altText);
-            }
         }
     } catch (error) {
         Log.error("Button click error:", error);
@@ -160,10 +151,6 @@ const injectButton = async(modal, templateContext = {}) => {
     if (button) {
         button.addEventListener('click', handleButtonClick);
     }
-
-    if (debugMode) {
-        Log.debug('AI button injected via template', templateContext);
-    }
 };
 
 /**
@@ -195,24 +182,12 @@ const initModalObserver = () => {
         childList: true,
         subtree: true
     });
-
-    if (debugMode) {
-        Log.debug('Modal observer initialized');
-    }
 };
 
 /**
  * Initialize AI alt text injection
- * @param {Object} config Configuration options
- * @param {boolean} config.debug Enable debug mode
  */
-export const init = (config = {}) => {
-    debugMode = config.debug || false;
-
-    if (debugMode) {
-        Log.debug('Initializing ultra-optimized AI alt text injection', config);
-    }
-
+export const init = () => {
     // Use robust MutationObserver approach
     initModalObserver();
 
@@ -226,8 +201,4 @@ export const init = (config = {}) => {
             }
         });
     }, 500);
-
-    if (debugMode) {
-        Log.debug('AI alt text injection initialized');
-    }
 };

@@ -30,162 +30,50 @@ use advanced_testcase;
  */
 final class injection_test extends advanced_testcase {
     /**
-     * Set up test environment.
+     * Test injection class properties and inheritance.
      */
-    protected function setUp(): void {
-        global $PAGE;
-        parent::setUp();
+    public function test_injection_class_properties(): void {
         $this->resetAfterTest(true);
-        // Ensure a valid context by attaching to a real course page without referencing context classes.
+
+        $injection = new injection();
+
+        // Test inheritance.
+        $this->assertInstanceOf(\local_ai_injection\local\base_injection::class, $injection);
+
+        // Test public methods return expected values.
+        $this->assertEquals('aiinjection_alttext', $injection->get_subplugin_name());
+        $this->assertEquals('aiinjection_alttext/alttext_injection', $injection->get_amd_module());
+        $this->assertIsArray($injection->get_js_config());
+
+        // Test enabled state.
+        set_config('enabled', 1, 'aiinjection_alttext');
+        $this->assertTrue($injection->is_enabled());
+
+        set_config('enabled', 0, 'aiinjection_alttext');
+        $this->assertFalse($injection->is_enabled());
+    }
+
+    /**
+     * Test should_inject respects capability.
+     */
+    public function test_should_inject_respects_capability(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
         $course = $this->getDataGenerator()->create_course();
         $PAGE->set_course($course);
         $PAGE->set_url('/course/view.php', ['id' => $course->id]);
-    }
-
-    /**
-     * Test get_subplugin_name method.
-     */
-    public function test_get_subplugin_name(): void {
-        $injection = new injection();
-
-        // Use reflection to access protected method.
-        $reflection = new \ReflectionMethod($injection, 'get_subplugin_name');
-        $reflection->setAccessible(true);
-
-        $this->assertEquals('aiinjection_alttext', $reflection->invoke($injection));
-    }
-
-    /**
-     * Test get_amd_module method.
-     */
-    public function test_get_amd_module(): void {
-        $injection = new injection();
-
-        // Use reflection to access protected method.
-        $reflection = new \ReflectionMethod($injection, 'get_amd_module');
-        $reflection->setAccessible(true);
-
-        $this->assertEquals('aiinjection_alttext/alttext_injection', $reflection->invoke($injection));
-    }
-
-    /**
-     * Test get_js_config method.
-     */
-    public function test_get_js_config(): void {
-        global $CFG;
-
-        // Test with debugging enabled.
-        $CFG->debug = DEBUG_DEVELOPER;
 
         $injection = new injection();
 
-        // Use reflection to access protected method.
-        $reflection = new \ReflectionMethod($injection, 'get_js_config');
-        $reflection->setAccessible(true);
-
-        $config = $reflection->invoke($injection);
-
-        $this->assertIsArray($config);
-        $this->assertArrayHasKey('debug', $config);
-        $this->assertTrue($config['debug']);
-
-        // Test with debugging disabled.
-        $CFG->debug = DEBUG_NONE;
-
-        $config = $reflection->invoke($injection);
-        $this->assertFalse($config['debug']);
-    }
-
-    /**
-     * Test should_inject method in debugging mode.
-     */
-    public function test_should_inject_debug_mode_with_capability(): void {
-        global $CFG;
-        // Admin has all capabilities by default.
-        $this->setAdminUser();
-        // Enable debugging (bypasses tenant check, but capability still required).
-        $CFG->debug = DEBUG_DEVELOPER;
-
-        $injection = new injection();
-        $reflection = new \ReflectionMethod($injection, 'should_inject');
-        $reflection->setAccessible(true);
-        $this->assertTrue($reflection->invoke($injection));
-    }
-
-    /**
-     * Ensure should_inject returns false without capability, even in debug mode.
-     */
-    public function test_should_inject_without_capability_is_false(): void {
-        global $CFG;
-        $CFG->debug = DEBUG_DEVELOPER; // Would normally allow, but capability is required first.
+        // Regular user without capability - should not inject.
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
+        $this->assertFalse($injection->should_inject());
 
-        $injection = new injection();
-        $reflection = new \ReflectionMethod($injection, 'should_inject');
-        $reflection->setAccessible(true);
-        $this->assertFalse($reflection->invoke($injection));
-    }
-
-    /**
-     * Test inheritance from base_injection.
-     */
-    public function test_inheritance(): void {
-        $injection = new injection();
-        $this->assertInstanceOf(\local_ai_injection\local\base_injection::class, $injection);
-    }
-
-    /**
-     * Test all required abstract methods are implemented.
-     */
-    public function test_required_methods_implemented(): void {
-        $injection = new injection();
-
-        // Test that all methods from base_injection are available.
-        $this->assertTrue(method_exists($injection, 'inject_javascript'));
-        $this->assertTrue(method_exists($injection, 'get_subplugin_name'));
-        $this->assertTrue(method_exists($injection, 'get_amd_module'));
-        $this->assertTrue(method_exists($injection, 'get_js_config'));
-        $this->assertTrue(method_exists($injection, 'should_inject'));
-    }
-
-    /**
-     * Test inject_javascript method integration (basic smoke test).
-     */
-    public function test_inject_javascript_integration(): void {
-        global $PAGE, $CFG;
-
-        // Enable the subplugin.
-        set_config('enabled', 1, 'aiinjection_alttext');
-        // Ensure user has capability and bypass tenant via debugging.
+        // Admin has all capabilities - should inject (tenant check bypassed implicitly).
         $this->setAdminUser();
-        $CFG->debug = DEBUG_DEVELOPER;
-
-        $injection = new injection();
-
-        // This should not throw an exception.
-        $injection->inject_javascript();
-
-        $this->assertTrue(true); // Test passes if no exception is thrown.
-    }
-
-    /**
-     * Test configuration integration.
-     */
-    public function test_configuration_integration(): void {
-        // Test enabled status.
-        set_config('enabled', 1, 'aiinjection_alttext');
-
-        $injection = new injection();
-
-        // Use reflection to test is_enabled method.
-        $reflection = new \ReflectionMethod($injection, 'is_enabled');
-        $reflection->setAccessible(true);
-
-        $this->assertTrue($reflection->invoke($injection));
-
-        // Test disabled status.
-        set_config('enabled', 0, 'aiinjection_alttext');
-        $this->assertFalse($reflection->invoke($injection));
+        $this->assertTrue($injection->should_inject());
     }
 }

@@ -32,7 +32,7 @@ class injection extends base_injection {
      *
      * @return string
      */
-    protected function get_subplugin_name(): string {
+    public function get_subplugin_name(): string {
         return 'aiinjection_alttext';
     }
 
@@ -41,7 +41,7 @@ class injection extends base_injection {
      *
      * @return string
      */
-    protected function get_amd_module(): string {
+    public function get_amd_module(): string {
         return 'aiinjection_alttext/alttext_injection';
     }
 
@@ -50,10 +50,8 @@ class injection extends base_injection {
      *
      * @return array
      */
-    protected function get_js_config(): array {
-        return [
-            'debug' => debugging(),
-        ];
+    public function get_js_config(): array {
+        return [];
     }
 
     /**
@@ -61,16 +59,11 @@ class injection extends base_injection {
      *
      * @return bool
      */
-    protected function should_inject(): bool {
+    public function should_inject(): bool {
         global $PAGE;
         // Require capability to use the Alt Text feature on the current page context.
         if (!has_capability('local/ai_injection:alttext_use', $PAGE->context)) {
             return false;
-        }
-
-        // Debug: Allow loading in developer mode to ease testing (capability still required).
-        if (debugging()) {
-            return true;
         }
 
         // Check if the tenant allows this functionality.
