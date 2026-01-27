@@ -25,10 +25,13 @@
 
 namespace local_ai_injection\plugininfo;
 
+use core\plugininfo\base;
+use core_plugin_manager;
+
 /**
  * Plugin info class for aiinjection subplugins.
  */
-class aiinjection extends \core\plugininfo\base {
+class aiinjection extends base {
     /**
      * Should there be a way to uninstall the plugin via the administration UI.
      *
@@ -61,26 +64,71 @@ class aiinjection extends \core\plugininfo\base {
      *
      * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
      */
+    #[\Override]
     public static function get_enabled_plugins() {
-        $plugins = \core_component::get_plugin_list('aiinjection');
-        $enabled = [];
+        global $DB;
 
-        foreach ($plugins as $plugin => $dir) {
-            if (get_config('aiinjection_' . $plugin, 'enabled')) {
-                $enabled[$plugin] = $plugin;
-            }
+        $plugins = core_plugin_manager::instance()->get_installed_plugins('aiinjection');
+        if (!$plugins) {
+            return [];
+        }
+        $installed = [];
+        foreach ($plugins as $plugin => $version) {
+            $installed[] = 'aiinjection_' . $plugin;
+        }
+
+        [$insql, $params] = $DB->get_in_or_equal($installed, SQL_PARAMS_NAMED);
+        $disabled = $DB->get_records_select(
+            'config_plugins',
+            "plugin $insql AND name = 'enabled' AND value = '0'",
+            $params,
+            'plugin ASC'
+        );
+        foreach ($disabled as $conf) {
+            unset($plugins[explode('_', $conf->plugin, 2)[1]]);
+        }
+
+        $enabled = [];
+        foreach ($plugins as $plugin => $version) {
+            $enabled[$plugin] = $plugin;
         }
 
         return $enabled;
     }
 
     /**
-     * Enable or disable this plugin.
+     * Enable or disable a plugin.
      *
-     * @param bool $newstate
+     * @param string $pluginname The plugin name to enable/disable
+     * @param int $enabled 1 to enable, 0 to disable
+     * @return bool True if the enabled state has changed
      */
-    public function set_enabled($newstate = true) {
-        set_config('enabled', $newstate ? 1 : 0, $this->component);
+    #[\Override]
+    public static function enable_plugin(string $pluginname, int $enabled): bool {
+        $haschanged = false;
+
+        $plugin = 'aiinjection_' . $pluginname;
+        $oldvalue = get_config($plugin, 'enabled');
+
+        // Only set value if there is no config setting or if the value is different from the previous one.
+        if ($oldvalue === false || (intval($oldvalue) !== $enabled)) {
+            set_config('enabled', $enabled, $plugin);
+            $haschanged = true;
+
+            add_to_config_log('enabled', $oldvalue, $enabled, $plugin);
+            core_plugin_manager::reset_caches();
+        }
+
+        return $haschanged;
+    }
+
+    /**
+     * Enable or disable this plugin instance.
+     *
+     * @param bool $newstate True to enable, false to disable
+     */
+    public function set_enabled($newstate = true): void {
+        self::enable_plugin($this->name, $newstate ? 1 : 0);
     }
 
     /**

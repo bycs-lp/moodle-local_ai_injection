@@ -28,9 +28,8 @@ use local_ai_manager\ai_manager_utils;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class injection extends base_injection {
-
     /** @var string The purpose this injection uses from local_ai_manager. */
-    private const PURPOSE = 'imggen';
+    private const PURPOSE = 'itt';
 
     /**
      * Get the subplugin name.
@@ -58,21 +57,6 @@ class injection extends base_injection {
     public function get_js_config(): array {
         global $PAGE, $USER;
 
-        $aiconfig = $this->get_ai_availability();
-
-        return [
-            $aiconfig,
-        ];
-    }
-
-    /**
-     * Get the AI availability configuration for this purpose.
-     *
-     * @return array Configuration with availability, errormessage, and purpose availability.
-     */
-    private function get_ai_availability(): array {
-        global $PAGE, $USER;
-
         $aiconfig = ai_manager_utils::get_ai_config(
             $USER,
             $PAGE->context->id,
@@ -81,10 +65,7 @@ class injection extends base_injection {
         );
 
         return [
-            'availability' => $aiconfig['availability']['available'] ?? ai_manager_utils::AVAILABILITY_HIDDEN,
-            'errormessage' => $aiconfig['availability']['errormessage'] ?? '',
-            'purpose_availability' => $aiconfig['purposes'][0]['available'] ?? ai_manager_utils::AVAILABILITY_HIDDEN,
-            'purpose_errormessage' => $aiconfig['purposes'][0]['errormessage'] ?? '',
+            $aiconfig,
         ];
     }
 
@@ -97,7 +78,7 @@ class injection extends base_injection {
      * @return bool
      */
     public function should_inject(): bool {
-        global $PAGE;
+        global $PAGE, $USER;
 
         // Require capability to use the Alt Text feature on the current page context.
         if (!has_capability('local/ai_injection:alttextuse', $PAGE->context)) {
@@ -105,15 +86,23 @@ class injection extends base_injection {
         }
 
         // Get AI configuration from local_ai_manager.
-        $aiconfig = $this->get_ai_availability();
+        $aiconfig = ai_manager_utils::get_ai_config(
+            $USER,
+            $PAGE->context->id,
+            null,
+            [self::PURPOSE]
+        );
 
         // If general availability is 'hidden', do not inject at all.
-        if ($aiconfig['availability'] === ai_manager_utils::AVAILABILITY_HIDDEN) {
+        if ($aiconfig['availability']['available'] === ai_manager_utils::AVAILABILITY_HIDDEN) {
             return false;
         }
 
         // If purpose availability is 'hidden', do not inject.
-        if ($aiconfig['purpose_availability'] === ai_manager_utils::AVAILABILITY_HIDDEN) {
+        if (
+            !empty($aiconfig['purposes']) &&
+                $aiconfig['purposes'][0]['available'] === ai_manager_utils::AVAILABILITY_HIDDEN
+        ) {
             return false;
         }
 

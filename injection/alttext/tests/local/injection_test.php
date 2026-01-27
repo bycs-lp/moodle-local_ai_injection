@@ -17,6 +17,7 @@
 namespace aiinjection_alttext\local;
 
 use advanced_testcase;
+use local_ai_injection\plugininfo\aiinjection;
 
 /**
  * Unit tests for alttext injection class.
@@ -83,5 +84,88 @@ final class injection_test extends advanced_testcase {
         // We just verify no exceptions are thrown.
         $result = $injection->should_inject();
         $this->assertIsBool($result);
+    }
+
+    /**
+     * Test plugin enable/disable via plugininfo.
+     */
+    public function test_plugin_enable_disable(): void {
+        $this->resetAfterTest(true);
+
+        $injection = new injection();
+
+        // Initially the plugin should be disabled (no config set).
+        set_config('enabled', 0, 'aiinjection_alttext');
+        $this->assertFalse($injection->is_enabled());
+
+        // Enable via static enable_plugin method.
+        $changed = aiinjection::enable_plugin('alttext', 1);
+        $this->assertTrue($changed);
+        $this->assertTrue($injection->is_enabled());
+
+        // Enabling again should return false (no change).
+        $changed = aiinjection::enable_plugin('alttext', 1);
+        $this->assertFalse($changed);
+
+        // Disable via static enable_plugin method.
+        $changed = aiinjection::enable_plugin('alttext', 0);
+        $this->assertTrue($changed);
+        $this->assertFalse($injection->is_enabled());
+
+        // Disabling again should return false (no change).
+        $changed = aiinjection::enable_plugin('alttext', 0);
+        $this->assertFalse($changed);
+    }
+
+    /**
+     * Test get_enabled_plugins returns correct list.
+     */
+    public function test_get_enabled_plugins(): void {
+        $this->resetAfterTest(true);
+
+        // Initially alttext should not be in enabled list (if disabled).
+        aiinjection::enable_plugin('alttext', 0);
+        $enabled = aiinjection::get_enabled_plugins();
+        $this->assertArrayNotHasKey('alttext', $enabled);
+
+        // Enable the plugin.
+        aiinjection::enable_plugin('alttext', 1);
+        $enabled = aiinjection::get_enabled_plugins();
+        $this->assertArrayHasKey('alttext', $enabled);
+        $this->assertEquals('alttext', $enabled['alttext']);
+    }
+
+    /**
+     * Test get_js_config returns correct ai_manager config structure.
+     *
+     * Note: This test verifies the structure of the returned config.
+     * The actual AI availability depends on local_ai_manager configuration.
+     */
+    public function test_get_js_config_structure(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+        $this->setAdminUser();
+
+        $injection = new injection();
+        $config = $injection->get_js_config();
+
+        // Verify basic structure.
+        $this->assertIsArray($config);
+        $this->assertCount(1, $config);
+        $this->assertArrayHasKey('availability', $config[0]);
+        $this->assertArrayHasKey('purposes', $config[0]);
+
+        // Verify availability structure.
+        $availability = $config[0]['availability'];
+        $this->assertArrayHasKey('available', $availability);
+        $this->assertArrayHasKey('errormessage', $availability);
+
+        // Verify purposes is an array.
+        $this->assertIsArray($config[0]['purposes']);
     }
 }
