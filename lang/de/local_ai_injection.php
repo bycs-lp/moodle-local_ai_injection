@@ -15,18 +15,12 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information for aiinjection_alttext subplugin.
+ * Strings for component 'local_ai_injection', language 'de'
  *
- * @package    aiinjection_alttext
- * @copyright  ISB Bayern, 2025
- * @author     Dr. Peter Mayer
+ * @package    local_ai_injection
+ * @category   string
+ * @copyright  2026 YOUR NAME <your@email.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'aiinjection_alttext';
-$plugin->version = 2025091105;
-$plugin->requires = 2025041400; // Moodle 5.0+.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '0.1';

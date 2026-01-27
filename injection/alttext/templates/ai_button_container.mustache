@@ -36,13 +36,13 @@ Example context (json):
 }}
 
 {{#isloading}}
-<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" disabled>
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled>
     {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
 </button>
 {{/isloading}}
 
 {{^isloading}}
-<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100">
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext">
     {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
 </button>
 {{/isloading}}

@@ -73,7 +73,7 @@ class injection extends base_injection {
      * Check if this injection should be active on the current page.
      *
      * Returns true if the general availability is not 'hidden'.
-     * The frontend will handle 'disabled' state by showing a disabled button with reason.
+     * For 'available' and 'disabled' states, the JavaScript is injected.
      *
      * @return bool
      */

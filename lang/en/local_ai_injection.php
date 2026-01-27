@@ -25,10 +25,11 @@
 
 $string['ai_injection:alttextuse'] = 'Use AI Alt Text generation';
 $string['ai_injection:manage'] = 'Manage AI Injection';
-$string['aiinjectionplugins'] = 'AI injection plugins';
+$string['aiinjectionplugins'] = 'AI Injection Subplugins';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';
 $string['enabled'] = 'Enabled';
+$string['generalsettings'] = 'General settings';
 $string['installedsubplugins'] = 'Installed AI Injection Subplugins:';
 $string['no_subplugins'] = 'No AI injection subplugins are currently installed.';
 $string['path'] = 'Path';
@@ -36,5 +37,5 @@ $string['pluginname'] = 'AI Injection';
 $string['privacy:metadata'] = 'The AI Injection plugin acts as a framework for subplugins and does not store any personal data itself.';
 $string['subplugins'] = 'Available AI Injection Subplugins';
 $string['subplugins_info'] = 'This framework plugin enables AI-powered subplugins to inject JavaScript into the page footer. Below is a list of installed subplugins:';
-$string['subplugintype_aiinjection'] = 'AI injection';
-$string['subplugintype_aiinjection_plural'] = 'AI injections';
+$string['subplugintype_aiinjection'] = 'AI Injection Subplugin';
+$string['subplugintype_aiinjection_plural'] = 'AI Injection Subplugins';

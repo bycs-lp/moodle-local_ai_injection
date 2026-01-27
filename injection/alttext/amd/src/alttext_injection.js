@@ -24,31 +24,52 @@
 
 import Log from 'core/log';
 import {getString} from 'core/str';
+import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 
+/** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
+const initializedModals = new WeakSet();
+
 /**
- * Convert image to base64
+ * Convert image to base64 using fetch and FileReader.
+ *
+ * Uses fetch to retrieve the image as a blob and FileReader to convert to base64.
+ * This approach avoids canvas CORS issues and is more reliable for cross-origin images.
+ *
  * @param {string} imageUrl Image URL to convert
  * @returns {Promise<string>} Promise resolving to base64 data URL
  */
-const imageToBase64 = (imageUrl) => new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = img.naturalWidth || img.width;
-        canvas.height = img.naturalHeight || img.height;
-        ctx.drawImage(img, 0, 0);
-        resolve(canvas.toDataURL('image/jpeg', 0.8));
-    };
-    img.onerror = () => reject(new Error('Image load failed'));
-    img.src = imageUrl;
-});
+const imageToBase64 = async(imageUrl) => {
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+        throw new Error('Failed to fetch image');
+    }
+    const blob = await response.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('FileReader failed'));
+        reader.readAsDataURL(blob);
+    });
+};
+
+/**
+ * Display error alert to user.
+ *
+ * @param {string} message Error message to display
+ * @param {string|null} title Optional title for the alert
+ */
+const showErrorAlert = async(message, title = null) => {
+    if (title === null) {
+        title = await getString('generateerror', 'aiinjection_alttext');
+    }
+    await moodleAlert(title, message);
+};
 
 /**
  * Extract alt text from AI response
+ *
  * @param {Object} data Response data from AI service
  * @returns {string|null} Extracted alt text or null
  */
@@ -61,42 +82,54 @@ const extractAltText = (data) => {
         return null;
     }
 
+    // Strip HTML tags from result.
     let text = result.replace(/<[^>]*>/g, '').trim();
+    // Attempt to decode escaped unicode characters.
     try {
         text = JSON.parse('"' + text.replace(/"/g, '\\"') + '"');
     } catch (e) {
-        // Use original if JSON parsing fails
+        // Use original if JSON parsing fails.
     }
     return text || null;
 };
 
 /**
  * Generate alt text using AI service
+ *
  * @param {string} imageUrl Image URL to process
  * @returns {Promise<string|null>} Generated alt text or null
  */
 const generateAltText = async(imageUrl) => {
-    try {
-        const [imageBase64, prompt] = await Promise.all([
-            imageToBase64(imageUrl),
-            getString('aiprompt', 'aiinjection_alttext')
-        ]);
+    const [imageBase64, prompt] = await Promise.all([
+        imageToBase64(imageUrl),
+        getString('aiprompt', 'aiinjection_alttext')
+    ]);
 
-        const result = await makeRequest('itt', prompt, 'aiinjection_alttext', 0, {image: imageBase64});
-        return extractAltText(Array.isArray(result) ? result[0] : result);
-    } catch (error) {
-        Log.error('AI generation failed:', error);
-        return null;
+    const result = await makeRequest('itt', prompt, 'aiinjection_alttext', 0, {image: imageBase64});
+
+    // Check for error response with code.
+    if (result?.code && result.code !== 200) {
+        const parsedResult = JSON.parse(result.result);
+        if (parsedResult.debuginfo) {
+            Log.error(parsedResult.debuginfo);
+        }
+        throw new Error(parsedResult.message || 'AI request failed');
     }
+
+    return extractAltText(Array.isArray(result) ? result[0] : result);
 };
 
 /**
  * Button click handler
+ *
  * @param {Event} event Click event
  */
-const handleButtonClick = async (event) => {
+const handleButtonClick = async(event) => {
     event.preventDefault();
-    const button = event.target;
+    const button = event.target.closest('[data-action="generate-alttext"]');
+    if (!button) {
+        return;
+    }
     const modal = button.closest(".modal");
     const textarea = modal.querySelector(".tiny_image_altentry");
     const image = modal.querySelector(".tiny_image_preview");
@@ -105,72 +138,84 @@ const handleButtonClick = async (event) => {
         return;
     }
 
-    // Show loading state via template
+    // Show loading state via template.
     await injectButton(modal, {isloading: true});
 
     try {
         const altText = await generateAltText(image.src);
         if (altText) {
             textarea.value = altText;
-            textarea.dispatchEvent(new Event("input", { bubbles: true }));
-            textarea.dispatchEvent(new Event("change", { bubbles: true }));
+            textarea.dispatchEvent(new Event("input", {bubbles: true}));
+            textarea.dispatchEvent(new Event("change", {bubbles: true}));
         }
     } catch (error) {
-        Log.error("Button click error:", error);
+        Log.error("Alt text generation failed:", error);
+        const errorMessage = await getString('generateerrorwithmessage', 'aiinjection_alttext', error.message);
+        await showErrorAlert(errorMessage);
     }
 
-    // Reset to normal state via template
+    // Reset to normal state via template.
     await injectButton(modal, {isloading: false});
 };
 
 /**
- * Inject AI button into modal
+ * Inject AI button into modal.
+ *
+ * Uses Templates.appendNodeContents for proper rendering and JS execution.
+ *
  * @param {HTMLElement} modal Modal element to inject button into
  * @param {Object} templateContext Context object for template rendering (optional)
  */
 const injectButton = async(modal, templateContext = {}) => {
-    const countspan = modal.querySelector("#the-count");
+    // Use data attribute selector for the character count element.
+    const countspan = modal.querySelector('[data-region="character-count"]') || modal.querySelector("#the-count");
     if (!countspan) {
         return;
     }
 
-    let button = modal.querySelector(".ai-alttext-btn");
-    if (button) {
-        button.remove();
+    // Remove existing button if present.
+    const existingButton = modal.querySelector('[data-action="generate-alttext"]');
+    if (existingButton) {
+        existingButton.remove();
     }
 
-    // Render Mustache-Template with context
+    // Render template using Templates.appendNodeContents which handles JS execution.
     const {html, js} = await Templates.renderForPromise('aiinjection_alttext/ai_button_container', templateContext);
     countspan.insertAdjacentHTML("afterend", html);
-    if (js) {
-        Templates.runTemplateJS(js);
-    }
+    Templates.runTemplateJS(js);
 
-    // Event Listener für den Button
-    button = modal.querySelector('.ai-alttext-btn');
+    // Always add event listener to the new button (old button was removed above).
+    const button = modal.querySelector('[data-action="generate-alttext"]');
     if (button) {
         button.addEventListener('click', handleButtonClick);
     }
 };
 
 /**
- * Initialize MutationObserver for modal detection
+ * Initialize MutationObserver for modal detection.
+ *
+ * Watches for new modals being added to the DOM and injects the AI button.
+ * Uses WeakSet to track initialized modals and prevent duplicate listeners.
  */
 const initModalObserver = () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    // Check if added node is a modal with tiny_image_altentry
+                    // Check if added node is a modal with tiny_image_altentry.
                     if (node.classList?.contains('modal') && node.querySelector('.tiny_image_altentry')) {
-                        setTimeout(() => injectButton(node), 100);
+                        if (!initializedModals.has(node)) {
+                            initializedModals.add(node);
+                            injectButton(node);
+                        }
                     }
-                    // Check if added node contains a modal with tiny_image_altentry
-                    const modal = node.querySelector?.('.modal .tiny_image_altentry');
-                    if (modal) {
-                        const modalElement = modal.closest('.modal');
-                        if (modalElement) {
-                            setTimeout(() => injectButton(modalElement), 100);
+                    // Check if added node contains a modal with tiny_image_altentry.
+                    const altentry = node.querySelector?.('.modal .tiny_image_altentry');
+                    if (altentry) {
+                        const modalElement = altentry.closest('.modal');
+                        if (modalElement && !initializedModals.has(modalElement)) {
+                            initializedModals.add(modalElement);
+                            injectButton(modalElement);
                         }
                     }
                 }
@@ -185,20 +230,19 @@ const initModalObserver = () => {
 };
 
 /**
- * Initialize AI alt text injection
+ * Initialize AI alt text injection.
  */
 export const init = () => {
-    // Use robust MutationObserver approach
+    // Use MutationObserver for detecting dynamically added modals.
     initModalObserver();
 
-    // Also check existing modals on page load
-    setTimeout(() => {
-        const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
-        existingModals.forEach(textarea => {
-            const modal = textarea.closest('.modal');
-            if (modal) {
-                injectButton(modal);
-            }
-        });
-    }, 500);
+    // Check for existing modals on page load.
+    const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
+    existingModals.forEach(textarea => {
+        const modal = textarea.closest('.modal');
+        if (modal && !initializedModals.has(modal)) {
+            initializedModals.add(modal);
+            injectButton(modal);
+        }
+    });
 };
