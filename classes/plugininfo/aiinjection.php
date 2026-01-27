@@ -180,4 +180,25 @@ class aiinjection extends base {
             }
         }
     }
+
+    /**
+     * Pre-uninstall hook for aiinjection subplugins.
+     *
+     * Cleans up all configuration settings for the subplugin being uninstalled.
+     * This is called automatically when a subplugin is uninstalled via the admin UI.
+     *
+     * @param \progress_trace $progress Trace object for logging
+     * @return bool True on success
+     */
+    #[\Override]
+    public function uninstall(\progress_trace $progress): bool {
+        global $DB;
+
+        // Remove all configuration settings for this subplugin.
+        $DB->delete_records('config_plugins', ['plugin' => $this->component]);
+
+        $progress->output("Removed configuration for {$this->component}");
+
+        return true;
+    }
 }
