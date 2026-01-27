@@ -25,12 +25,13 @@
 
 $string['ai_injection:alttextuse'] = 'Use AI Alt Text generation';
 $string['ai_injection:manage'] = 'Manage AI Injection';
-$string['aiinjectionplugins'] = 'AI Injection Subplugins';
+$string['aiinjectionplugins'] = 'Subplugin Settings';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';
 $string['enabled'] = 'Enabled';
 $string['generalsettings'] = 'General settings';
 $string['installedsubplugins'] = 'Installed AI Injection Subplugins:';
+$string['managesubplugins'] = 'Manage Subplugins';
 $string['no_subplugins'] = 'No AI injection subplugins are currently installed.';
 $string['path'] = 'Path';
 $string['pluginname'] = 'AI Injection';

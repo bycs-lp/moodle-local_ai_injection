@@ -36,7 +36,7 @@ if ($hassiteconfig) {
     // Subplugin management page using core plugin_management_table.
     $aiinjectionsettingpage = new admin_settingpage(
         'aiinjectionpluginsmanagement',
-        get_string('subplugintype_aiinjection_plural', 'local_ai_injection'),
+        get_string('managesubplugins', 'local_ai_injection'),
         'local/ai_injection:manage'
     );
     $aiinjectionsettingpage->add(
