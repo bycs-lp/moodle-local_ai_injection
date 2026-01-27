@@ -15,12 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'local_ai_injection', language 'de'
+ * German language strings for local_ai_injection.
  *
  * @package    local_ai_injection
- * @category   string
- * @copyright  2026 YOUR NAME <your@email.com>
+ * @copyright  ISB Bayern, 2025
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$string['ai_injection:alttextuse'] = 'KI-Alternativtext-Generierung verwenden';
+$string['ai_injection:manage'] = 'KI-Injection verwalten';
+$string['aiinjectionplugins'] = 'Subplugin-Einstellungen';
+$string['disabled'] = 'Deaktiviert';
+$string['enable_subplugin'] = '{$a} aktivieren';
+$string['enabled'] = 'Aktiviert';
+$string['generalsettings'] = 'Allgemeine Einstellungen';
+$string['installedsubplugins'] = 'Installierte KI-Injection Subplugins:';
+$string['managesubplugins'] = 'Subplugins verwalten';
+$string['no_subplugins'] = 'Derzeit sind keine KI-Injection Subplugins installiert.';
+$string['path'] = 'Pfad';
+$string['pluginname'] = 'KI-Injection';
+$string['privacy:metadata'] = 'Das Plugin KI-Injection dient als Framework für Subplugins und speichert selbst keine personenbezogenen Daten.';
+$string['subplugins'] = 'Verfügbare KI-Injection Subplugins';
+$string['subplugins_info'] = 'Dieses Framework-Plugin ermöglicht KI-gestützten Subplugins, JavaScript in den Seitenfuß einzufügen. Nachfolgend eine Liste der installierten Subplugins:';
+$string['subplugintype_aiinjection'] = 'KI-Injection Subplugin';
+$string['subplugintype_aiinjection_plural'] = 'KI-Injection Subplugins';

@@ -15,12 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'aiinjection_alttext', language 'de'
+ * German language strings for aiinjection_alttext.
  *
  * @package    aiinjection_alttext
- * @category   string
- * @copyright  2026 YOUR NAME <your@email.com>
+ * @copyright  ISB Bayern, 2025
+ * @author     Dr. Peter Mayer
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+$string['aiprompt'] = 'Erstelle einen präzisen deutschen Alternativtext für das Bild. Beschreibe kurz und sachlich, was auf dem Bild zu sehen ist. Der Alternativtext soll für sehbehinderte Menschen verständlich sein.';
+$string['apply'] = 'Übernehmen';
+$string['generatealttext'] = 'Bildbeschreibung generieren';
+$string['generatedalttext'] = 'Generierte Bildbeschreibung';
+$string['generateerror'] = 'Fehler beim Generieren der Bildbeschreibung. Bitte versuchen Sie es erneut.';
+$string['generateerrorwithmessage'] = 'Fehler beim Generieren der Bildbeschreibung: {$a}';
+$string['generating'] = 'Generiere';
+$string['generatingdescription'] = 'Generiere Beschreibung...';
+$string['noalttextgenerated'] = 'Keine Bildbeschreibung generiert';
+$string['plugin_desc'] = 'Aktiviert die automatische Generierung von Bildbeschreibungen im Dateiauswahldialog mithilfe von KI';
+$string['pluginname'] = 'KI-Bildbeschreibung';
+$string['privacy:metadata'] = 'Das Plugin KI-Bildbeschreibung speichert keine personenbezogenen Daten.';
+$string['regenerate'] = 'Neu generieren';
+$string['retry'] = 'Erneut versuchen';
+$string['selector'] = 'Bildselektor';
+$string['selector_desc'] = 'CSS-Selektor zur Identifikation von Bildern, die Bildbeschreibungen benötigen (Standard: img:not([alt]), img[alt=""])';
