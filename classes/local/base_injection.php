@@ -33,11 +33,11 @@ abstract class base_injection {
     abstract public function get_subplugin_name(): string;
 
     /**
-     * Get the AMD module name for this subplugin.
+     * Get the JS module name for this subplugin.
      *
      * @return string
      */
-    abstract public function get_amd_module(): string;
+    abstract public function get_js_module_name(): string;
 
     /**
      * Get the configuration parameters for the JavaScript module.
@@ -72,9 +72,9 @@ abstract class base_injection {
             return;
         }
 
-        // Load the AMD module with configuration.
+        // Load the JS module with configuration.
         $PAGE->requires->js_call_amd(
-            $this->get_amd_module(),
+            $this->get_js_module_name(),
             'init',
             $this->get_js_config()
         );

@@ -29,15 +29,6 @@
     color: #6c757d;
 }
 
-.ai-alttext-button .fa-spinner {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .ai-alttext-button {

@@ -17,6 +17,7 @@
 namespace aiinjection_alttext\local;
 
 use local_ai_injection\local\base_injection;
+use local_ai_manager\ai_manager_utils;
 
 /**
  * AI Alt Text injection class.
@@ -27,6 +28,10 @@ use local_ai_injection\local\base_injection;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class injection extends base_injection {
+
+    /** @var string The purpose this injection uses from local_ai_manager. */
+    private const PURPOSE = 'imggen';
+
     /**
      * Get the subplugin name.
      *
@@ -37,11 +42,11 @@ class injection extends base_injection {
     }
 
     /**
-     * Get the AMD module name for this subplugin.
+     * Get the JS module name for this subplugin.
      *
      * @return string
      */
-    public function get_amd_module(): string {
+    public function get_js_module_name(): string {
         return 'aiinjection_alttext/alttext_injection';
     }
 
@@ -51,27 +56,69 @@ class injection extends base_injection {
      * @return array
      */
     public function get_js_config(): array {
-        return [];
+        global $PAGE, $USER;
+
+        $aiconfig = $this->get_ai_availability();
+
+        return [
+            $aiconfig,
+        ];
+    }
+
+    /**
+     * Get the AI availability configuration for this purpose.
+     *
+     * @return array Configuration with availability, errormessage, and purpose availability.
+     */
+    private function get_ai_availability(): array {
+        global $PAGE, $USER;
+
+        $aiconfig = ai_manager_utils::get_ai_config(
+            $USER,
+            $PAGE->context->id,
+            null,
+            [self::PURPOSE]
+        );
+
+        return [
+            'availability' => $aiconfig['availability']['available'] ?? ai_manager_utils::AVAILABILITY_HIDDEN,
+            'errormessage' => $aiconfig['availability']['errormessage'] ?? '',
+            'purpose_availability' => $aiconfig['purposes'][0]['available'] ?? ai_manager_utils::AVAILABILITY_HIDDEN,
+            'purpose_errormessage' => $aiconfig['purposes'][0]['errormessage'] ?? '',
+        ];
     }
 
     /**
      * Check if this injection should be active on the current page.
      *
+     * Returns true if the general availability is not 'hidden'.
+     * The frontend will handle 'disabled' state by showing a disabled button with reason.
+     *
      * @return bool
      */
     public function should_inject(): bool {
         global $PAGE;
+
         // Require capability to use the Alt Text feature on the current page context.
-        if (!has_capability('local/ai_injection:alttext_use', $PAGE->context)) {
+        if (!has_capability('local/ai_injection:alttextuse', $PAGE->context)) {
             return false;
         }
 
-        // Check if the tenant allows this functionality.
-        $tenant = \core\di::get(\local_ai_manager\local\tenant::class);
-        if (!$tenant->is_tenant_allowed()) {
+        // Get AI configuration from local_ai_manager.
+        $aiconfig = $this->get_ai_availability();
+
+        // If general availability is 'hidden', do not inject at all.
+        if ($aiconfig['availability'] === ai_manager_utils::AVAILABILITY_HIDDEN) {
             return false;
         }
 
+        // If purpose availability is 'hidden', do not inject.
+        if ($aiconfig['purpose_availability'] === ai_manager_utils::AVAILABILITY_HIDDEN) {
+            return false;
+        }
+
+        // For 'available' and 'disabled' states, we inject the JavaScript.
+        // The frontend will handle the 'disabled' state appropriately.
         return true;
     }
 }

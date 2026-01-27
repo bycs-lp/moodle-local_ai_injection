@@ -1,0 +1,74 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace aiinjection_failplugin\local;
+
+use local_ai_injection\local\base_injection;
+
+/**
+ * Failing test subplugin for unit testing.
+ *
+ * @package    local_ai_injection
+ * @copyright  ISB Bayern, 2025
+ * @author     Dr. Peter Mayer
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class injection extends base_injection {
+    /**
+     * Get the subplugin name.
+     *
+     * @return string
+     */
+    public function get_subplugin_name(): string {
+        return 'aiinjection_failplugin';
+    }
+
+    /**
+     * Get the JS module name for this subplugin.
+     *
+     * @return string
+     */
+    public function get_js_module_name(): string {
+        return 'aiinjection_failplugin/fail_module';
+    }
+
+    /**
+     * Get the configuration parameters for the JavaScript module.
+     *
+     * @return array
+     */
+    public function get_js_config(): array {
+        return [];
+    }
+
+    /**
+     * Check if this injection should be active on the current page.
+     *
+     * @return bool
+     */
+    public function should_inject(): bool {
+        return true;
+    }
+
+    /**
+     * Override to throw exception for testing.
+     *
+     * @return void
+     */
+    public function inject_javascript(): void {
+        throw new \Exception('Test exception');
+    }
+}

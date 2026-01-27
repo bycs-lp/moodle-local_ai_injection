@@ -76,7 +76,7 @@ class injection extends base_injection {
         return 'aiinjection_my_plugin';
     }
 
-    protected function get_amd_module(): string {
+    protected function get_js_module_name(): string {
         return 'aiinjection_my_plugin/my_module';
     }
 
@@ -132,7 +132,7 @@ $plugin->dependencies = [
 
 ### Abstract methods (must be implemented):
 - `get_subplugin_name()`: Returns the subplugin name
-- `get_amd_module()`: Returns the AMD module name
+- `get_js_module_name()`: Returns the JS module name
 - `get_js_config()`: Returns configuration for JavaScript
 - `should_inject()`: Checks if plugin should load on current page
 

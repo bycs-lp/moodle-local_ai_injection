@@ -48,10 +48,10 @@ final class base_injection_test extends advanced_testcase {
             }
 
             /**
-             * Get the AMD module name.
+             * Get the JS module name.
              * @return string
              */
-            public function get_amd_module(): string {
+            public function get_js_module_name(): string {
                 return 'aiinjection_test/test_module';
             }
 

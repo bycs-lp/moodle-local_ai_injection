@@ -24,7 +24,6 @@
  */
 
 $string['aiprompt'] = 'Generate a precise German alt text for the image. Describe briefly and factually what is seen in the image. The alt text should be understandable for visually impaired people.';
-$string['alttext:use'] = 'Use AI Alt Text button';
 $string['apply'] = 'Apply';
 $string['generatealttext'] = 'Generate Image Description';
 $string['generatedalttext'] = 'Generated Image Description';

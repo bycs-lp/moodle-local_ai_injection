@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['ai_injection:alttextuse'] = 'Use AI Alt Text generation';
 $string['ai_injection:manage'] = 'Manage AI Injection';
 $string['aiinjectionplugins'] = 'AI injection plugins';
 $string['disabled'] = 'Disabled';
