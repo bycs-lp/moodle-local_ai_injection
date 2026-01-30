@@ -17,6 +17,7 @@
 namespace aiinjection_alttext\local;
 
 use local_ai_injection\local\base_injection;
+use local_ai_injection\local\ai_manager_wrapper;
 use local_ai_manager\ai_manager_utils;
 
 /**
@@ -30,6 +31,18 @@ use local_ai_manager\ai_manager_utils;
 class injection extends base_injection {
     /** @var string The purpose this injection uses from local_ai_manager. */
     private const PURPOSE = 'itt';
+
+    /** @var ai_manager_wrapper The AI manager wrapper instance. */
+    private ai_manager_wrapper $aimanagerwrapper;
+
+    /**
+     * Constructor.
+     *
+     * Uses dependency injection to get the AI manager wrapper.
+     */
+    public function __construct() {
+        $this->aimanagerwrapper = \core\di::get(ai_manager_wrapper::class);
+    }
 
     /**
      * Get the subplugin name.
@@ -57,7 +70,7 @@ class injection extends base_injection {
     public function get_js_config(): array {
         global $PAGE, $USER;
 
-        $aiconfig = ai_manager_utils::get_ai_config(
+        $aiconfig = $this->aimanagerwrapper->get_ai_config(
             $USER,
             $PAGE->context->id,
             null,
@@ -86,7 +99,7 @@ class injection extends base_injection {
         }
 
         // Get AI configuration from local_ai_manager.
-        $aiconfig = ai_manager_utils::get_ai_config(
+        $aiconfig = $this->aimanagerwrapper->get_ai_config(
             $USER,
             $PAGE->context->id,
             null,

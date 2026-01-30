@@ -18,6 +18,7 @@ namespace local_ai_injection\local;
 
 use advanced_testcase;
 use core\hook\output\before_footer_html_generation;
+use local_ai_manager\ai_manager_utils;
 
 /**
  * Unit tests for hook_callbacks class.
@@ -31,10 +32,34 @@ use core\hook\output\before_footer_html_generation;
  */
 final class hook_callbacks_test extends advanced_testcase {
     /**
+     * Create a mock AI manager wrapper with hidden availability.
+     *
+     * @return ai_manager_wrapper The mocked wrapper
+     */
+    private function create_mock_ai_wrapper(): ai_manager_wrapper {
+        $mock = $this->createMock(ai_manager_wrapper::class);
+
+        $aiconfig = [
+            'availability' => [
+                'available' => ai_manager_utils::AVAILABILITY_HIDDEN,
+                'errormessage' => '',
+            ],
+            'purposes' => [],
+        ];
+
+        $mock->method('get_ai_config')->willReturn($aiconfig);
+
+        return $mock;
+    }
+
+    /**
      * Test hook callback executes without errors.
      */
     public function test_before_footer_html_generation_executes(): void {
         $this->resetAfterTest(true);
+
+        // Mock the AI manager wrapper via DI to prevent real AI manager calls.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper());
 
         // Create a mock renderer.
         $renderer = $this->getMockBuilder(\core\output\renderer_base::class)

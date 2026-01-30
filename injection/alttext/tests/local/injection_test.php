@@ -17,7 +17,9 @@
 namespace aiinjection_alttext\local;
 
 use advanced_testcase;
+use local_ai_injection\local\ai_manager_wrapper;
 use local_ai_injection\plugininfo\aiinjection;
+use local_ai_manager\ai_manager_utils;
 
 /**
  * Unit tests for alttext injection class.
@@ -31,10 +33,47 @@ use local_ai_injection\plugininfo\aiinjection;
  */
 final class injection_test extends advanced_testcase {
     /**
+     * Create a mock AI manager wrapper with the given availability state.
+     *
+     * @param string $generalavailability One of ai_manager_utils::AVAILABILITY_* constants
+     * @param string|null $purposeavailability One of ai_manager_utils::AVAILABILITY_* constants, or null
+     * @return ai_manager_wrapper The mocked wrapper
+     */
+    private function create_mock_ai_wrapper(
+        string $generalavailability = ai_manager_utils::AVAILABILITY_AVAILABLE,
+        ?string $purposeavailability = null
+    ): ai_manager_wrapper {
+        $mock = $this->createMock(ai_manager_wrapper::class);
+
+        $aiconfig = [
+            'availability' => [
+                'available' => $generalavailability,
+                'errormessage' => '',
+            ],
+            'purposes' => [],
+        ];
+
+        if ($purposeavailability !== null) {
+            $aiconfig['purposes'][] = [
+                'purpose' => 'itt',
+                'available' => $purposeavailability,
+                'errormessage' => '',
+            ];
+        }
+
+        $mock->method('get_ai_config')->willReturn($aiconfig);
+
+        return $mock;
+    }
+
+    /**
      * Test injection class properties and inheritance.
      */
     public function test_injection_class_properties(): void {
         $this->resetAfterTest(true);
+
+        // Mock the AI manager wrapper via DI.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper());
 
         $injection = new injection();
 
@@ -55,12 +94,9 @@ final class injection_test extends advanced_testcase {
     }
 
     /**
-     * Test should_inject respects capability.
-     *
-     * Note: The full should_inject logic depends on local_ai_manager configuration.
-     * This test focuses on the capability check only.
+     * Test should_inject returns false when user lacks capability.
      */
-    public function test_should_inject_respects_capability(): void {
+    public function test_should_inject_returns_false_without_capability(): void {
         global $PAGE;
         $this->resetAfterTest(true);
 
@@ -69,21 +105,115 @@ final class injection_test extends advanced_testcase {
         $PAGE->set_course($course);
         $PAGE->set_url('/course/view.php', ['id' => $course->id]);
 
+        // Mock the AI manager wrapper via DI with AVAILABLE state.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_AVAILABLE
+        ));
+
         $injection = new injection();
 
         // Regular user without capability - should not inject.
         $user = $this->getDataGenerator()->create_user();
         $this->setUser($user);
         $this->assertFalse($injection->should_inject());
+    }
 
-        // Admin has capability but without configured ai_manager,
-        // should_inject returns false due to AVAILABILITY_HIDDEN.
-        // The capability check happens before AI config check.
+    /**
+     * Test should_inject returns true when user has capability and AI is available.
+     */
+    public function test_should_inject_returns_true_with_capability_and_available(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+
+        // Mock the AI manager wrapper via DI with AVAILABLE state.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_AVAILABLE
+        ));
+
+        $injection = new injection();
+
+        // Admin has capability - should inject when AI is available.
         $this->setAdminUser();
-        // The full test would require a configured local_ai_manager instance.
-        // We just verify no exceptions are thrown.
-        $result = $injection->should_inject();
-        $this->assertIsBool($result);
+        $this->assertTrue($injection->should_inject());
+    }
+
+    /**
+     * Test should_inject returns true when AI is disabled (frontend handles disabled state).
+     */
+    public function test_should_inject_returns_true_when_ai_disabled(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+
+        // Mock the AI manager wrapper via DI with DISABLED state.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_DISABLED
+        ));
+
+        $injection = new injection();
+
+        // Admin has capability - should inject even when disabled.
+        // Frontend will show disabled button with reason.
+        $this->setAdminUser();
+        $this->assertTrue($injection->should_inject());
+    }
+
+    /**
+     * Test should_inject returns false when AI is hidden.
+     */
+    public function test_should_inject_returns_false_when_ai_hidden(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+
+        // Mock the AI manager wrapper via DI with HIDDEN state.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_HIDDEN
+        ));
+
+        $injection = new injection();
+
+        // Admin has capability but AI is hidden - should not inject.
+        $this->setAdminUser();
+        $this->assertFalse($injection->should_inject());
+    }
+
+    /**
+     * Test should_inject returns false when purpose is hidden.
+     */
+    public function test_should_inject_returns_false_when_purpose_hidden(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+
+        // Mock the AI manager wrapper via DI with AVAILABLE general but HIDDEN purpose.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_AVAILABLE,
+            ai_manager_utils::AVAILABILITY_HIDDEN
+        ));
+
+        $injection = new injection();
+
+        // Admin has capability but purpose is hidden - should not inject.
+        $this->setAdminUser();
+        $this->assertFalse($injection->should_inject());
     }
 
     /**
@@ -91,6 +221,9 @@ final class injection_test extends advanced_testcase {
      */
     public function test_plugin_enable_disable(): void {
         $this->resetAfterTest(true);
+
+        // Mock the AI manager wrapper via DI.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper());
 
         $injection = new injection();
 
@@ -137,9 +270,6 @@ final class injection_test extends advanced_testcase {
 
     /**
      * Test get_js_config returns correct ai_manager config structure.
-     *
-     * Note: This test verifies the structure of the returned config.
-     * The actual AI availability depends on local_ai_manager configuration.
      */
     public function test_get_js_config_structure(): void {
         global $PAGE;
@@ -150,6 +280,12 @@ final class injection_test extends advanced_testcase {
         $PAGE->set_course($course);
         $PAGE->set_url('/course/view.php', ['id' => $course->id]);
         $this->setAdminUser();
+
+        // Mock the AI manager wrapper via DI.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper(
+            ai_manager_utils::AVAILABILITY_AVAILABLE,
+            ai_manager_utils::AVAILABILITY_AVAILABLE
+        ));
 
         $injection = new injection();
         $config = $injection->get_js_config();
@@ -164,8 +300,11 @@ final class injection_test extends advanced_testcase {
         $availability = $config[0]['availability'];
         $this->assertArrayHasKey('available', $availability);
         $this->assertArrayHasKey('errormessage', $availability);
+        $this->assertEquals(ai_manager_utils::AVAILABILITY_AVAILABLE, $availability['available']);
 
-        // Verify purposes is an array.
+        // Verify purposes is an array with one purpose.
         $this->assertIsArray($config[0]['purposes']);
+        $this->assertCount(1, $config[0]['purposes']);
+        $this->assertEquals('itt', $config[0]['purposes'][0]['purpose']);
     }
 }
