@@ -78,7 +78,8 @@ class injection extends base_injection {
         );
 
         return [
-            $aiconfig,
+            'aiconfig' => $aiconfig,
+            'contextid' => $PAGE->context->id,
         ];
     }
 

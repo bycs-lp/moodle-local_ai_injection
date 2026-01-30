@@ -27,6 +27,7 @@ import {getString} from 'core/str';
 import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
+import Config from 'core/config';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -34,45 +35,20 @@ const initializedModals = new WeakSet();
 /** @type {Object|null} Store AI configuration passed from PHP */
 let aiConfig = null;
 
+/** @type {number} Context ID for AI requests, passed from PHP */
+let contextId = 0;
+
 /**
- * Get current user language from DOM.
+ * Get current user language name in English.
  *
- * Extracts the language from the html lang attribute which is set by Moodle.
- * Falls back to 'English' if not found.
+ * Uses Intl.DisplayNames to get the language name in English based on Moodle's Config.language.
  *
- * @returns {string} User's current language name
+ * @returns {string} User's current language name in English (e.g., 'German', 'French')
  */
 const getCurrentLanguage = () => {
-    const htmlLang = document.documentElement.lang || 'en';
-    // Map common language codes to full language names for the AI prompt.
-    const languageMap = {
-        'de': 'German',
-        'en': 'English',
-        'fr': 'French',
-        'es': 'Spanish',
-        'it': 'Italian',
-        'pt': 'Portuguese',
-        'nl': 'Dutch',
-        'pl': 'Polish',
-        'ru': 'Russian',
-        'ja': 'Japanese',
-        'zh': 'Chinese',
-        'ko': 'Korean',
-        'ar': 'Arabic',
-        'tr': 'Turkish',
-        'cs': 'Czech',
-        'sv': 'Swedish',
-        'da': 'Danish',
-        'fi': 'Finnish',
-        'no': 'Norwegian',
-        'hu': 'Hungarian',
-        'el': 'Greek',
-        'he': 'Hebrew',
-        'uk': 'Ukrainian',
-    };
-    // Extract base language code (e.g., 'de' from 'de-DE').
-    const baseLang = htmlLang.split('-')[0].toLowerCase();
-    return languageMap[baseLang] || 'English';
+    const currentUserLanguage = Config.language.substring(0, 2);
+    const englishDisplayNames = new Intl.DisplayNames(['en'], {type: 'language'});
+    return englishDisplayNames.of(currentUserLanguage) || 'English';
 };
 
 /**
@@ -176,7 +152,7 @@ const generateAltText = async(imageUrl) => {
         getString('aiprompt', 'aiinjection_alttext', currentLanguage)
     ]);
 
-    const result = await makeRequest('itt', prompt, 'aiinjection_alttext', 0, {image: imageBase64});
+    const result = await makeRequest('itt', prompt, 'aiinjection_alttext', contextId, {image: imageBase64});
 
     // Check for error response with code.
     if (result?.code && result.code !== 200) {
@@ -310,11 +286,13 @@ const initModalObserver = () => {
 /**
  * Initialize AI alt text injection.
  *
- * @param {Object} config AI configuration object from PHP
+ * @param {Object} config Configuration object from PHP containing aiconfig and contextid
  */
 export const init = (config) => {
-    // Store configuration for later use.
-    aiConfig = config;
+    // Store AI configuration for later use.
+    aiConfig = config.aiconfig;
+    // Store context ID for AI requests (required for proper permission checks).
+    contextId = config.contextid || 0;
 
     // Use MutationObserver for detecting dynamically added modals.
     initModalObserver();

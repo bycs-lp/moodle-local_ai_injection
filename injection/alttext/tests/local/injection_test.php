@@ -290,21 +290,29 @@ final class injection_test extends advanced_testcase {
         $injection = new injection();
         $config = $injection->get_js_config();
 
-        // Verify basic structure.
+        // Verify structure with aiconfig and contextid keys.
         $this->assertIsArray($config);
-        $this->assertCount(1, $config);
-        $this->assertArrayHasKey('availability', $config[0]);
-        $this->assertArrayHasKey('purposes', $config[0]);
+        $this->assertArrayHasKey('aiconfig', $config);
+        $this->assertArrayHasKey('contextid', $config);
+
+        // Verify contextid is a positive integer (course context).
+        $this->assertIsInt($config['contextid']);
+        $this->assertGreaterThan(0, $config['contextid']);
+
+        // Verify aiconfig structure.
+        $aiconfig = $config['aiconfig'];
+        $this->assertArrayHasKey('availability', $aiconfig);
+        $this->assertArrayHasKey('purposes', $aiconfig);
 
         // Verify availability structure.
-        $availability = $config[0]['availability'];
+        $availability = $aiconfig['availability'];
         $this->assertArrayHasKey('available', $availability);
         $this->assertArrayHasKey('errormessage', $availability);
         $this->assertEquals(ai_manager_utils::AVAILABILITY_AVAILABLE, $availability['available']);
 
         // Verify purposes is an array with one purpose.
-        $this->assertIsArray($config[0]['purposes']);
-        $this->assertCount(1, $config[0]['purposes']);
-        $this->assertEquals('itt', $config[0]['purposes'][0]['purpose']);
+        $this->assertIsArray($aiconfig['purposes']);
+        $this->assertCount(1, $aiconfig['purposes']);
+        $this->assertEquals('itt', $aiconfig['purposes'][0]['purpose']);
     }
 }

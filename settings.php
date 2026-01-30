@@ -37,7 +37,7 @@ if ($hassiteconfig) {
     $aiinjectionsettingpage = new admin_settingpage(
         'aiinjectionpluginsmanagement',
         get_string('managesubplugins', 'local_ai_injection'),
-        'local/ai_injection:manage'
+        'moodle/site:config'
     );
     $aiinjectionsettingpage->add(
         new \core_admin\admin\admin_setting_plugin_manager(
