@@ -34,9 +34,9 @@ class injection extends base_injection {
 
     /**
      * The prompt template for AI alt text generation.
-     * {LANGUAGE} will be replaced with the user's language name in English.
+     * {LANGUAGE} placeholder will be replaced with the user's language name in English.
      */
-    private const PROMPT_TEMPLATE = 'Generate a precise alt text for the image in the following language: {LANGUAGE}. ' .
+    public const PROMPT_TEMPLATE = 'Generate a precise alt text for the image in the following language: {LANGUAGE}. ' .
         'Describe briefly and factually what is seen in the image. ' .
         'The alt text should be understandable for visually impaired people. ' .
         'Do not use any special characters, especially no quotes.';
@@ -89,8 +89,37 @@ class injection extends base_injection {
         return [
             'aiconfig' => $aiconfig,
             'contextid' => $PAGE->context->id,
-            'prompttemplate' => self::PROMPT_TEMPLATE,
+            'prompt' => $this->get_prompt(),
         ];
+    }
+
+    /**
+     * Get the prompt for AI alt text generation.
+     *
+     * The prompt is always in English with the target language name inserted.
+     * This ensures consistent AI behavior regardless of the user's UI language.
+     *
+     * @return string The complete prompt with language inserted
+     */
+    private function get_prompt(): string {
+        $languagename = $this->get_language_name_in_english();
+        return str_replace('{LANGUAGE}', $languagename, self::PROMPT_TEMPLATE);
+    }
+
+    /**
+     * Get the current user's language name in English.
+     *
+     * Uses PHP's Locale class to get the display name of the current language in English.
+     *
+     * @return string Language name in English (e.g., 'German', 'French')
+     */
+    private function get_language_name_in_english(): string {
+        $currentlang = current_language();
+        // Get the two-letter language code.
+        $langcode = substr($currentlang, 0, 2);
+        // Use PHP Intl extension to get language name in English.
+        $languagename = \Locale::getDisplayLanguage($langcode, 'en');
+        return $languagename ?: 'English';
     }
 
     /**

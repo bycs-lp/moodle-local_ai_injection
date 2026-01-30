@@ -27,7 +27,6 @@ import {getString} from 'core/str';
 import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
-import Config from 'core/config';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -38,21 +37,8 @@ let aiConfig = null;
 /** @type {number} Context ID for AI requests, passed from PHP */
 let contextId = 0;
 
-/** @type {string} Prompt template from PHP with {LANGUAGE} placeholder */
-let promptTemplate = '';
-
-/**
- * Get current user language name in English.
- *
- * Uses Intl.DisplayNames to get the language name in English based on Moodle's Config.language.
- *
- * @returns {string} User's current language name in English (e.g., 'German', 'French')
- */
-const getCurrentLanguage = () => {
-    const currentUserLanguage = Config.language.substring(0, 2);
-    const englishDisplayNames = new Intl.DisplayNames(['en'], {type: 'language'});
-    return englishDisplayNames.of(currentUserLanguage) || 'English';
-};
+/** @type {string} Complete prompt from PHP with language already inserted */
+let prompt = '';
 
 /**
  * Check if AI purpose is disabled.
@@ -147,12 +133,6 @@ const extractAltText = (data) => {
  * @returns {Promise<string|null>} Generated alt text or null
  */
 const generateAltText = async(imageUrl) => {
-    // Get current user language for the prompt.
-    const currentLanguage = getCurrentLanguage();
-
-    // Replace {LANGUAGE} placeholder in prompt template from PHP config.
-    const prompt = promptTemplate.replace('{LANGUAGE}', currentLanguage);
-
     const imageBase64 = await imageToBase64(imageUrl);
 
     const result = await makeRequest('itt', prompt, 'aiinjection_alttext', contextId, {image: imageBase64});
@@ -296,8 +276,8 @@ export const init = (config) => {
     aiConfig = config.aiconfig;
     // Store context ID for AI requests (required for proper permission checks).
     contextId = config.contextid || 0;
-    // Store prompt template from PHP.
-    promptTemplate = config.prompttemplate || '';
+    // Store complete prompt from PHP (language already inserted).
+    prompt = config.prompt || '';
 
     // Use MutationObserver for detecting dynamically added modals.
     initModalObserver();

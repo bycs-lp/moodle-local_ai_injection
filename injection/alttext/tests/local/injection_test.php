@@ -94,6 +94,66 @@ final class injection_test extends advanced_testcase {
     }
 
     /**
+     * Test PROMPT_TEMPLATE constant exists and contains expected structure.
+     */
+    public function test_prompt_template_constant(): void {
+        // PROMPT_TEMPLATE should be a public constant.
+        $this->assertTrue(
+            defined(injection::class . '::PROMPT_TEMPLATE'),
+            'PROMPT_TEMPLATE constant should be defined'
+        );
+
+        $template = injection::PROMPT_TEMPLATE;
+
+        // Template should be a non-empty string.
+        $this->assertIsString($template);
+        $this->assertNotEmpty($template);
+
+        // Template should contain the {LANGUAGE} placeholder.
+        $this->assertStringContainsString('{LANGUAGE}', $template);
+
+        // Template should be in English (contains key English phrases).
+        $this->assertStringContainsString('Generate a precise alt text', $template);
+        $this->assertStringContainsString('visually impaired', $template);
+    }
+
+    /**
+     * Test get_js_config returns prompt with language inserted.
+     */
+    public function test_get_js_config_returns_prompt_with_language(): void {
+        global $PAGE;
+        $this->resetAfterTest(true);
+
+        // Setup course context.
+        $course = $this->getDataGenerator()->create_course();
+        $PAGE->set_course($course);
+        $PAGE->set_url('/course/view.php', ['id' => $course->id]);
+
+        // Mock the AI manager wrapper via DI.
+        \core\di::set(ai_manager_wrapper::class, $this->create_mock_ai_wrapper());
+
+        $this->setAdminUser();
+
+        $injection = new injection();
+        $config = $injection->get_js_config();
+
+        // Config should contain prompt.
+        $this->assertArrayHasKey('prompt', $config);
+        $this->assertIsString($config['prompt']);
+        $this->assertNotEmpty($config['prompt']);
+
+        // Prompt should NOT contain the placeholder (it should be replaced).
+        $this->assertStringNotContainsString('{LANGUAGE}', $config['prompt']);
+
+        // Prompt should contain key phrases from the template.
+        $this->assertStringContainsString('Generate a precise alt text', $config['prompt']);
+
+        // Prompt should contain a language name (e.g., "English").
+        // The exact language depends on the test environment, but it should be there.
+        $this->assertMatchesRegularExpression('/language: [A-Z][a-z]+/', $config['prompt']);
+    }
+
+    /**
      * Test should_inject returns false when user lacks capability.
      */
     public function test_should_inject_returns_false_without_capability(): void {

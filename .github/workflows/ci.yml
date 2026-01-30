@@ -111,7 +111,7 @@ jobs:
                 fi
               fi
             done
-          done   
+          done
           if [ "$fail" -ne 0 ]; then
             echo "Some PHPUnit runs failed:"
             printf '%s\n' "${failures[@]}"
