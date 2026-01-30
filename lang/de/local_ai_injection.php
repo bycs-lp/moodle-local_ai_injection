@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['ai_injection:alttextuse'] = 'KI-Alternativtext-Generierung verwenden';
 $string['ai_injection:manage'] = 'KI-Injection verwalten';
 $string['aiinjectionplugins'] = 'Subplugin-Einstellungen';
 $string['disabled'] = 'Deaktiviert';

@@ -31,6 +31,74 @@ import Templates from 'core/templates';
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
 
+/** @type {Object|null} Store AI configuration passed from PHP */
+let aiConfig = null;
+
+/**
+ * Get current user language from DOM.
+ *
+ * Extracts the language from the html lang attribute which is set by Moodle.
+ * Falls back to 'English' if not found.
+ *
+ * @returns {string} User's current language name
+ */
+const getCurrentLanguage = () => {
+    const htmlLang = document.documentElement.lang || 'en';
+    // Map common language codes to full language names for the AI prompt.
+    const languageMap = {
+        'de': 'German',
+        'en': 'English',
+        'fr': 'French',
+        'es': 'Spanish',
+        'it': 'Italian',
+        'pt': 'Portuguese',
+        'nl': 'Dutch',
+        'pl': 'Polish',
+        'ru': 'Russian',
+        'ja': 'Japanese',
+        'zh': 'Chinese',
+        'ko': 'Korean',
+        'ar': 'Arabic',
+        'tr': 'Turkish',
+        'cs': 'Czech',
+        'sv': 'Swedish',
+        'da': 'Danish',
+        'fi': 'Finnish',
+        'no': 'Norwegian',
+        'hu': 'Hungarian',
+        'el': 'Greek',
+        'he': 'Hebrew',
+        'uk': 'Ukrainian',
+    };
+    // Extract base language code (e.g., 'de' from 'de-DE').
+    const baseLang = htmlLang.split('-')[0].toLowerCase();
+    return languageMap[baseLang] || 'English';
+};
+
+/**
+ * Check if AI purpose is disabled.
+ *
+ * @returns {boolean} True if purpose is disabled
+ */
+const isPurposeDisabled = () => {
+    if (!aiConfig?.purposes?.[0]) {
+        return false;
+    }
+    return aiConfig.purposes[0].available === 'disabled';
+};
+
+/**
+ * Get disabled reason message.
+ *
+ * @returns {string|null} Disabled reason or null
+ */
+const getDisabledReason = () => {
+    if (!isPurposeDisabled()) {
+        return null;
+    }
+    return aiConfig.purposes[0].disabledreason || null;
+};
+
 /**
  * Convert image to base64 using fetch and FileReader.
  *
@@ -100,9 +168,12 @@ const extractAltText = (data) => {
  * @returns {Promise<string|null>} Generated alt text or null
  */
 const generateAltText = async(imageUrl) => {
+    // Get current user language for the prompt.
+    const currentLanguage = getCurrentLanguage();
+
     const [imageBase64, prompt] = await Promise.all([
         imageToBase64(imageUrl),
-        getString('aiprompt', 'aiinjection_alttext')
+        getString('aiprompt', 'aiinjection_alttext', currentLanguage)
     ]);
 
     const result = await makeRequest('itt', prompt, 'aiinjection_alttext', 0, {image: imageBase64});
@@ -162,6 +233,7 @@ const handleButtonClick = async(event) => {
  * Inject AI button into modal.
  *
  * Uses Templates.appendNodeContents for proper rendering and JS execution.
+ * Handles disabled state by showing a disabled button with tooltip.
  *
  * @param {HTMLElement} modal Modal element to inject button into
  * @param {Object} templateContext Context object for template rendering (optional)
@@ -179,14 +251,20 @@ const injectButton = async(modal, templateContext = {}) => {
         existingButton.remove();
     }
 
+    // Add disabled state to template context if purpose is disabled.
+    if (isPurposeDisabled()) {
+        templateContext.isdisabled = true;
+        templateContext.disabledreason = getDisabledReason();
+    }
+
     // Render template using Templates.appendNodeContents which handles JS execution.
     const {html, js} = await Templates.renderForPromise('aiinjection_alttext/ai_button_container', templateContext);
     countspan.insertAdjacentHTML("afterend", html);
     Templates.runTemplateJS(js);
 
-    // Always add event listener to the new button (old button was removed above).
+    // Only add event listener if not disabled.
     const button = modal.querySelector('[data-action="generate-alttext"]');
-    if (button) {
+    if (button && !isPurposeDisabled()) {
         button.addEventListener('click', handleButtonClick);
     }
 };
@@ -231,8 +309,13 @@ const initModalObserver = () => {
 
 /**
  * Initialize AI alt text injection.
+ *
+ * @param {Object} config AI configuration object from PHP
  */
-export const init = () => {
+export const init = (config) => {
+    // Store configuration for later use.
+    aiConfig = config;
+
     // Use MutationObserver for detecting dynamically added modals.
     initModalObserver();
 

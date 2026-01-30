@@ -28,10 +28,14 @@ Data attributes required for JS:
 Context variables required for this template:
 * isloading (optional) - Boolean flag to show loading state
 * loadingtext (optional) - Custom loading text
+* isdisabled (optional) - Boolean flag to show disabled state
+* disabledreason (optional) - Reason why the button is disabled
 
 Example context (json):
 {
-    "isloading": false
+    "isloading": false,
+    "isdisabled": false,
+    "disabledreason": ""
 }
 }}
 
@@ -42,7 +46,14 @@ Example context (json):
 {{/isloading}}
 
 {{^isloading}}
+{{#isdisabled}}
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled title="{{disabledreason}}">
+    {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+</button>
+{{/isdisabled}}
+{{^isdisabled}}
 <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext">
     {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
 </button>
+{{/isdisabled}}
 {{/isloading}}

@@ -81,7 +81,7 @@ class injection extends base_injection {
         global $PAGE, $USER;
 
         // Require capability to use the Alt Text feature on the current page context.
-        if (!has_capability('local/ai_injection:alttextuse', $PAGE->context)) {
+        if (!has_capability('aiinjection/alttext:use', $PAGE->context)) {
             return false;
         }
 

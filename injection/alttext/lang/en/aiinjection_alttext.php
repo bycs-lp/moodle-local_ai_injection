@@ -23,7 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['aiprompt'] = 'Generate a precise German alt text for the image. Describe briefly and factually what is seen in the image. The alt text should be understandable for visually impaired people.';
+$string['aiprompt'] = 'Generate a precise alt text for the image in the following language: {$a}. Describe briefly and factually what is seen in the image. The alt text should be understandable for visually impaired people. Do not use any special characters, especially no quotes.';
+$string['alttext:use'] = 'Use AI Alt Text generation';
 $string['apply'] = 'Apply';
 $string['generatealttext'] = 'Generate Image Description';
 $string['generatedalttext'] = 'Generated Image Description';

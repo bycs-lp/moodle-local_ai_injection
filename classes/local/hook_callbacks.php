@@ -45,15 +45,11 @@ class hook_callbacks {
 
             if (class_exists($classname)) {
                 try {
-                    $injection = new $classname();
-                    if (method_exists($injection, 'inject_javascript')) {
-                        $injection->inject_javascript();
-                    }
+                    $injection = \core\di::get($classname);
+                    $injection->inject_javascript();
                 } catch (\Exception $e) {
                     // Log error but don't break the page.
-                    if (debugging()) {
-                        debugging('Error initializing AI injection subplugin ' . $name . ': ' . $e->getMessage());
-                    }
+                    debugging('Error initializing AI injection subplugin ' . $name . ': ' . $e->getMessage());
                 }
             }
         }

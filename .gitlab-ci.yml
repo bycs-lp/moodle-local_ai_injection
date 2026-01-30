@@ -1,7 +1,0 @@
-include:
-  - project: 'mebis-moodle/local_pipeline_docker'
-    file:
-      - 'plugin-ci.yml'
-
-variables:
-  EXTRA_PLUGINS: "https://github.com/bycs-lp/moodle-local_ai_manager#ai_manager"
