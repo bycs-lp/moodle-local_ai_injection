@@ -59,11 +59,6 @@ class aiinjection extends base {
         return new \moodle_url('/admin/settings.php', ['section' => 'local_ai_injection']);
     }
 
-    /**
-     * Finds all enabled plugins, the result may include missing plugins.
-     *
-     * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
-     */
     #[\Override]
     public static function get_enabled_plugins() {
         global $DB;
@@ -96,13 +91,6 @@ class aiinjection extends base {
         return $enabled;
     }
 
-    /**
-     * Enable or disable a plugin.
-     *
-     * @param string $pluginname The plugin name to enable/disable
-     * @param int $enabled 1 to enable, 0 to disable
-     * @return bool True if the enabled state has changed
-     */
     #[\Override]
     public static function enable_plugin(string $pluginname, int $enabled): bool {
         $haschanged = false;
@@ -181,15 +169,6 @@ class aiinjection extends base {
         }
     }
 
-    /**
-     * Pre-uninstall hook for aiinjection subplugins.
-     *
-     * Cleans up all configuration settings for the subplugin being uninstalled.
-     * This is called automatically when a subplugin is uninstalled via the admin UI.
-     *
-     * @param \progress_trace $progress Trace object for logging
-     * @return bool True on success
-     */
     #[\Override]
     public function uninstall(\progress_trace $progress): bool {
         global $DB;
