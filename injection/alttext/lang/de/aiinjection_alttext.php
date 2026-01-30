@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['aiprompt'] = 'Erstelle einen präzisen Alternativtext für das Bild in folgender Sprache: {$a}. Beschreibe kurz und sachlich, was auf dem Bild zu sehen ist. Der Alternativtext soll für sehbehinderte Menschen verständlich sein. Benutze keine Sonderzeichen, insbesondere keine Anführungszeichen.';
 $string['alttext:use'] = 'KI-Alternativtext-Generierung verwenden';
 $string['apply'] = 'Übernehmen';
 $string['generatealttext'] = 'Bildbeschreibung generieren';

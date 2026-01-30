@@ -38,6 +38,9 @@ let aiConfig = null;
 /** @type {number} Context ID for AI requests, passed from PHP */
 let contextId = 0;
 
+/** @type {string} Prompt template from PHP with {LANGUAGE} placeholder */
+let promptTemplate = '';
+
 /**
  * Get current user language name in English.
  *
@@ -147,10 +150,10 @@ const generateAltText = async(imageUrl) => {
     // Get current user language for the prompt.
     const currentLanguage = getCurrentLanguage();
 
-    const [imageBase64, prompt] = await Promise.all([
-        imageToBase64(imageUrl),
-        getString('aiprompt', 'aiinjection_alttext', currentLanguage)
-    ]);
+    // Replace {LANGUAGE} placeholder in prompt template from PHP config.
+    const prompt = promptTemplate.replace('{LANGUAGE}', currentLanguage);
+
+    const imageBase64 = await imageToBase64(imageUrl);
 
     const result = await makeRequest('itt', prompt, 'aiinjection_alttext', contextId, {image: imageBase64});
 
@@ -293,6 +296,8 @@ export const init = (config) => {
     aiConfig = config.aiconfig;
     // Store context ID for AI requests (required for proper permission checks).
     contextId = config.contextid || 0;
+    // Store prompt template from PHP.
+    promptTemplate = config.prompttemplate || '';
 
     // Use MutationObserver for detecting dynamically added modals.
     initModalObserver();

@@ -32,6 +32,15 @@ class injection extends base_injection {
     /** @var string The purpose this injection uses from local_ai_manager. */
     private const PURPOSE = 'itt';
 
+    /**
+     * The prompt template for AI alt text generation.
+     * {LANGUAGE} will be replaced with the user's language name in English.
+     */
+    private const PROMPT_TEMPLATE = 'Generate a precise alt text for the image in the following language: {LANGUAGE}. ' .
+        'Describe briefly and factually what is seen in the image. ' .
+        'The alt text should be understandable for visually impaired people. ' .
+        'Do not use any special characters, especially no quotes.';
+
     /** @var ai_manager_wrapper The AI manager wrapper instance. */
     private ai_manager_wrapper $aimanagerwrapper;
 
@@ -80,6 +89,7 @@ class injection extends base_injection {
         return [
             'aiconfig' => $aiconfig,
             'contextid' => $PAGE->context->id,
+            'prompttemplate' => self::PROMPT_TEMPLATE,
         ];
     }
 

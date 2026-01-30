@@ -96,7 +96,8 @@ abstract class base_injection {
      * @param mixed $default Default value
      * @return mixed
      */
-    public function get_config(string $name, $default = null) {
-        return get_config($this->get_subplugin_name(), $name) ?: $default;
+    public function get_config(string $name, mixed $default = null): mixed {
+        $value = get_config($this->get_subplugin_name(), $name);
+        return $value !== false ? $value : $default;
     }
 }
