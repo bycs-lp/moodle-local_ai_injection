@@ -76,7 +76,7 @@ abstract class base_injection {
         $PAGE->requires->js_call_amd(
             $this->get_js_module_name(),
             'init',
-            $this->get_js_config()
+            [$this->get_js_config()]
         );
     }
 
