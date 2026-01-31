@@ -27,6 +27,7 @@ import {getString} from 'core/str';
 import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
+import Popover from 'theme_boost/bootstrap/popover';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -45,7 +46,10 @@ let prompt = '';
  *
  * @returns {boolean} True if purpose is disabled
  */
-const isPurposeDisabled = () => {
+const isAiDisabled = () => {
+    if (aiConfig.availability.available === 'disabled') {
+        return true;
+    }
     if (!aiConfig?.purposes?.[0]) {
         return false;
     }
@@ -58,10 +62,13 @@ const isPurposeDisabled = () => {
  * @returns {string|null} Disabled reason or null
  */
 const getDisabledReason = () => {
-    if (!isPurposeDisabled()) {
+    if (!isAiDisabled()) {
         return null;
     }
-    return aiConfig.purposes[0].disabledreason || null;
+    if (aiConfig.availability.available === 'disabled') {
+        return aiConfig.availability.errormessage;
+    }
+    return aiConfig.purposes[0].errormessage || null;
 };
 
 /**
@@ -211,19 +218,24 @@ const injectButton = async(modal, templateContext = {}) => {
     }
 
     // Add disabled state to template context if purpose is disabled.
-    if (isPurposeDisabled()) {
+    if (isAiDisabled()) {
         templateContext.isdisabled = true;
         templateContext.disabledreason = getDisabledReason();
     }
 
     // Render template using Templates.appendNodeContents which handles JS execution.
     const {html, js} = await Templates.renderForPromise('aiinjection_alttext/ai_button_container', templateContext);
-    countspan.insertAdjacentHTML("afterend", html);
-    Templates.runTemplateJS(js);
+    Templates.appendNodeContents(countspan.parentElement, html, js);
+
+    // Initialize popover for disabled button (on wrapper span).
+    const popoverTrigger = countspan.parentElement.querySelector('[data-bs-toggle="popover"]');
+    if (popoverTrigger) {
+        new Popover(popoverTrigger);
+    }
 
     // Only add event listener if not disabled.
     const button = modal.querySelector('[data-action="generate-alttext"]');
-    if (button && !isPurposeDisabled()) {
+    if (button && !isAiDisabled()) {
         button.addEventListener('click', handleButtonClick);
     }
 };
