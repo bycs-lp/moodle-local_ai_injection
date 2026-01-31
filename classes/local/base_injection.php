@@ -42,6 +42,9 @@ abstract class base_injection {
     /**
      * Get the configuration parameters for the JavaScript module.
      *
+     * CARE: Do not pass too much data over this, because this is being injected directly into the
+     * JS module. If you need to pass more data, consider using AJAX calls from the JS side for example.
+     *
      * @return array
      */
     abstract public function get_js_config(): array;
