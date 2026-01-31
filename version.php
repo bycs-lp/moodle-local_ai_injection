@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_ai_injection';
-$plugin->version   = 2025091102;
+$plugin->version   = 2026013000;
 $plugin->requires  = 2025041400; // Moodle 5.0+.
 $plugin->maturity  = MATURITY_BETA;
 $plugin->release   = '0.1';
