@@ -1,0 +1,8 @@
+{
+    "subplugintypes": {
+        "aiinjection": "injection"
+    },
+    "plugintypes": {
+        "aiinjection": "local/ai_injection/injection"
+    }
+}

@@ -1,0 +1,106 @@
+<?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+namespace local_ai_injection\local;
+
+/**
+ * Base class for AI injection subplugins.
+ *
+ * @package    local_ai_injection
+ * @copyright  ISB Bayern, 2025
+ * @author     Dr. Peter Mayer
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+abstract class base_injection {
+    /**
+     * Get the subplugin name.
+     *
+     * @return string
+     */
+    abstract public function get_subplugin_name(): string;
+
+    /**
+     * Get the JS module name for this subplugin.
+     *
+     * @return string
+     */
+    abstract public function get_js_module_name(): string;
+
+    /**
+     * Get the configuration parameters for the JavaScript module.
+     *
+     * CARE: Do not pass too much data over this, because this is being injected directly into the
+     * JS module. If you need to pass more data, consider using AJAX calls from the JS side for example.
+     *
+     * @return array
+     */
+    abstract public function get_js_config(): array;
+
+    /**
+     * Check if this injection should be active on the current page.
+     *
+     * @return bool
+     */
+    abstract public function should_inject(): bool;
+
+    /**
+     * Inject JavaScript into the page.
+     * This is the main method subplugins should call.
+     *
+     * @return void
+     */
+    public function inject_javascript(): void {
+        global $PAGE;
+
+        // Check if subplugin is enabled.
+        if (!$this->is_enabled()) {
+            return;
+        }
+
+        // Check if we should inject on this page.
+        if (!$this->should_inject()) {
+            return;
+        }
+
+        // Load the JS module with configuration.
+        $PAGE->requires->js_call_amd(
+            $this->get_js_module_name(),
+            'init',
+            [$this->get_js_config()]
+        );
+    }
+
+    /**
+     * Check if this subplugin is enabled.
+     *
+     * @return bool
+     */
+    public function is_enabled(): bool {
+        return (bool) get_config($this->get_subplugin_name(), 'enabled');
+    }
+
+    /**
+     * Get a configuration value for this subplugin.
+     *
+     * @param string $name Configuration name
+     * @param mixed $default Default value
+     * @return mixed
+     */
+    public function get_config(string $name, mixed $default = null): mixed {
+        $value = get_config($this->get_subplugin_name(), $name);
+        return $value !== false ? $value : $default;
+    }
+}

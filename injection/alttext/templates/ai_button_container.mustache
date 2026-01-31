@@ -1,0 +1,61 @@
+{{!
+This file is part of Moodle - http://moodle.org/
+
+Moodle is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Moodle is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+@template aiinjection_alttext/ai_button_container
+
+AI Alt Text Button Container Template
+
+Classes required for JS:
+* ai-alttext-button - Main button for AI alt text generation
+
+Data attributes required for JS:
+* data-image-url - URL of the image to generate alt text for
+
+Context variables required for this template:
+* isloading (optional) - Boolean flag to show loading state
+* loadingtext (optional) - Custom loading text
+* isdisabled (optional) - Boolean flag to show disabled state
+* disabledreason (optional) - Reason why the button is disabled
+
+Example context (json):
+{
+    "isloading": false,
+    "isdisabled": false,
+    "disabledreason": ""
+}
+}}
+
+{{#isloading}}
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled>
+    {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
+</button>
+{{/isloading}}
+
+{{^isloading}}
+{{#isdisabled}}
+<span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
+    <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled style="pointer-events: none;">
+        {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+    </button>
+</span>
+{{/isdisabled}}
+{{^isdisabled}}
+<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext">
+    {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+</button>
+{{/isdisabled}}
+{{/isloading}}
