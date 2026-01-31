@@ -24,18 +24,11 @@
  */
 
 $string['alttext:use'] = 'Use AI Alt Text generation';
-$string['apply'] = 'Apply';
 $string['generatealttext'] = 'Generate Image Description';
-$string['generatedalttext'] = 'Generated Image Description';
 $string['generateerror'] = 'Error generating image description. Please try again.';
 $string['generateerrorwithmessage'] = 'Error generating image description: {$a}';
 $string['generating'] = 'Generating';
-$string['generatingdescription'] = 'Generating description...';
-$string['noalttextgenerated'] = 'No image description generated';
-$string['plugin_desc'] = 'Enable automatic generation of image descriptions in the file picker using AI';
 $string['pluginname'] = 'AI Image Description';
 $string['privacy:metadata'] = 'The AI Image Description plugin does not store any personal data.';
-$string['regenerate'] = 'Regenerate';
-$string['retry'] = 'Retry';
 $string['selector'] = 'Image Selector';
 $string['selector_desc'] = 'CSS selector to identify images that need image descriptions (default: img:not([alt]), img[alt=""])';

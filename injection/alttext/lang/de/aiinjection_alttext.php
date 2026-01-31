@@ -24,18 +24,13 @@
  */
 
 $string['alttext:use'] = 'KI-Alternativtext-Generierung verwenden';
-$string['apply'] = 'Übernehmen';
 $string['generatealttext'] = 'Bildbeschreibung generieren';
-$string['generatedalttext'] = 'Generierte Bildbeschreibung';
 $string['generateerror'] = 'Fehler beim Generieren der Bildbeschreibung. Bitte versuchen Sie es erneut.';
 $string['generateerrorwithmessage'] = 'Fehler beim Generieren der Bildbeschreibung: {$a}';
 $string['generating'] = 'Generiere';
 $string['generatingdescription'] = 'Generiere Beschreibung...';
 $string['noalttextgenerated'] = 'Keine Bildbeschreibung generiert';
-$string['plugin_desc'] = 'Aktiviert die automatische Generierung von Bildbeschreibungen im Dateiauswahldialog mithilfe von KI';
 $string['pluginname'] = 'KI-Bildbeschreibung';
 $string['privacy:metadata'] = 'Das Plugin KI-Bildbeschreibung speichert keine personenbezogenen Daten.';
-$string['regenerate'] = 'Neu generieren';
-$string['retry'] = 'Erneut versuchen';
 $string['selector'] = 'Bildselektor';
 $string['selector_desc'] = 'CSS-Selektor zur Identifikation von Bildern, die Bildbeschreibungen benötigen (Standard: img:not([alt]), img[alt=""])';
