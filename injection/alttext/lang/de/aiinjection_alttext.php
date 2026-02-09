@@ -32,5 +32,6 @@ $string['generatingdescription'] = 'Generiere Beschreibung...';
 $string['noalttextgenerated'] = 'Keine Bildbeschreibung generiert';
 $string['pluginname'] = 'KI-Bildbeschreibung';
 $string['privacy:metadata'] = 'Das Plugin KI-Bildbeschreibung speichert keine personenbezogenen Daten.';
+$string['purposeplacedescription'] = 'Generieren von Alt-Texten für Bilder';
 $string['selector'] = 'Bildselektor';
 $string['selector_desc'] = 'CSS-Selektor zur Identifikation von Bildern, die Bildbeschreibungen benötigen (Standard: img:not([alt]), img[alt=""])';

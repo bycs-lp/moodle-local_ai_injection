@@ -14,19 +14,28 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace aiinjection_alttext\local;
+
 /**
- * Version information for aiinjection_alttext subplugin.
+ * Hook listener callbacks.
  *
  * @package    aiinjection_alttext
- * @copyright  ISB Bayern, 2025
- * @author     Dr. Peter Mayer
+ * @copyright  2026 ISB Bayern
+ * @author     Philipp Memmel
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'aiinjection_alttext';
-$plugin->version = 2026020900;
-$plugin->requires = 2025041400; // Moodle 5.0+.
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '0.1';
+class hook_callbacks {
+    /**
+     * Provide additional information about which purposes are being used by this plugin.
+     *
+     * @param \local_ai_manager\hook\purpose_usage $hook the purpose_usage hook object
+     */
+    public static function handle_purpose_usage(\local_ai_manager\hook\purpose_usage $hook): void {
+        $hook->set_component_displayname('aiinjection_alttext', get_string('pluginname', 'aiinjection_alttext'));
+        $hook->add_purpose_usage_description(
+            'itt',
+            'aiinjection_alttext',
+            get_string('purposeplacedescription', 'aiinjection_alttext')
+        );
+    }
+}

@@ -30,5 +30,6 @@ $string['generateerrorwithmessage'] = 'Error generating image description: {$a}'
 $string['generating'] = 'Generating';
 $string['pluginname'] = 'AI Image Description';
 $string['privacy:metadata'] = 'The AI Image Description plugin does not store any personal data.';
+$string['purposeplacedescription'] = 'Generating alt text for images';
 $string['selector'] = 'Image Selector';
 $string['selector_desc'] = 'CSS selector to identify images that need image descriptions (default: img:not([alt]), img[alt=""])';
