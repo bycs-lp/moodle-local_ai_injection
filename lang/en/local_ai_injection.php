@@ -24,15 +24,15 @@
  */
 
 $string['aiinjectionplugins'] = 'Subplugin Settings';
-$string['confirmaiusage_title'] = 'AI usage confirmation';
-$string['confirmaiusage_confirm'] = 'Generate Alttext now';
 $string['confirmaiusage_cancel'] = 'Cancel';
+$string['confirmaiusage_confirm'] = 'Generate Alttext now';
 $string['confirmaiusage_message'] = 'The selected image will be sent to an external AI-System.';
-$string['info_aiusage'] = 'AI usage information';
+$string['confirmaiusage_title'] = 'AI usage confirmation';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';
 $string['enabled'] = 'Enabled';
 $string['generalsettings'] = 'General settings';
+$string['info_aiusage'] = 'AI usage information';
 $string['installedsubplugins'] = 'Installed AI Injection Subplugins:';
 $string['managesubplugins'] = 'Manage Subplugins';
 $string['no_subplugins'] = 'No AI injection subplugins are currently installed.';
