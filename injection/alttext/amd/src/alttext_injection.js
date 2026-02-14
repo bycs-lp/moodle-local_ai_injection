@@ -28,6 +28,7 @@ import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 import Popover from 'theme_boost/bootstrap/popover';
+import {confirmAiUsage, SESSION_KEY, showAiInfo} from 'local_ai_injection/confirm_ai_usage';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -175,8 +176,13 @@ const handleButtonClick = async(event) => {
         return;
     }
 
+    const confirmed = await confirmAiUsage('aiinjection_alttext', ['itt']);
+    if (!confirmed) {
+        return;
+    }
+
     // Show loading state via template.
-    await injectButton(modal, {isloading: true});
+    await injectButton(modal, {isloading: true, confirmed: false});
 
     try {
         const altText = await generateAltText(image.src);
@@ -192,7 +198,7 @@ const handleButtonClick = async(event) => {
     }
 
     // Reset to normal state via template.
-    await injectButton(modal, {isloading: false});
+    await injectButton(modal, {isloading: false, confirmed: true});
 };
 
 /**
@@ -211,10 +217,10 @@ const injectButton = async(modal, templateContext = {}) => {
         return;
     }
 
-    // Remove existing button if present.
-    const existingButton = modal.querySelector('[data-action="generate-alttext"]');
-    if (existingButton) {
-        existingButton.remove();
+    // Remove existing button container if present.
+    const existingContainer = modal.querySelector('.ai-button-container');
+    if (existingContainer) {
+        existingContainer.remove();
     }
 
     // Add disabled state to template context if purpose is disabled.
@@ -238,6 +244,12 @@ const injectButton = async(modal, templateContext = {}) => {
     if (button && !isAiDisabled()) {
         button.addEventListener('click', handleButtonClick);
     }
+
+    // Add info icon event listener.
+    const info = modal.querySelector('.ai-alttext-info');
+    if (info) {
+        info.addEventListener('click', () => showAiInfo('aiinjection_alttext', ['itt']));
+    }
 };
 
 /**
@@ -251,11 +263,13 @@ const initModalObserver = () => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
+                    const confirmed = sessionStorage.getItem(SESSION_KEY) === '1';
+
                     // Check if added node is a modal with tiny_image_altentry.
                     if (node.classList?.contains('modal') && node.querySelector('.tiny_image_altentry')) {
                         if (!initializedModals.has(node)) {
                             initializedModals.add(node);
-                            injectButton(node);
+                            injectButton(node, {confirmed: confirmed});
                         }
                     }
                     // Check if added node contains a modal with tiny_image_altentry.
@@ -264,7 +278,7 @@ const initModalObserver = () => {
                         const modalElement = altentry.closest('.modal');
                         if (modalElement && !initializedModals.has(modalElement)) {
                             initializedModals.add(modalElement);
-                            injectButton(modalElement);
+                            injectButton(modalElement, {confirmed: confirmed});
                         }
                     }
                 }
@@ -295,12 +309,13 @@ export const init = (config) => {
     initModalObserver();
 
     // Check for existing modals on page load.
+    const confirmed = sessionStorage.getItem(SESSION_KEY) === '1';
     const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
     existingModals.forEach(textarea => {
         const modal = textarea.closest('.modal');
         if (modal && !initializedModals.has(modal)) {
             initializedModals.add(modal);
-            injectButton(modal);
+            injectButton(modal, {confirmed: confirmed});
         }
     });
 };

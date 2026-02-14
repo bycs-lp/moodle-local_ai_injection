@@ -1,0 +1,51 @@
+{{!
+      This file is part of Moodle - http://moodle.org/
+
+      Moodle is free software: you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation, either version 3 of the License, or
+      (at your option) any later version.
+
+      Moodle is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+
+      You should have received a copy of the GNU General Public License
+      along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+  }}
+{{!
+    @template local_ai_injection/confirm_ai_usage_modal
+
+    Confirmation modal for AI usage with infobox and warningbox.
+    The container div is populated via JS by renderInfoBox and renderWarningBox.
+}}
+{{< core/modal }}
+    {{$title}}
+        {{^infoonly}}
+        {{#str}} confirmaiusage_title, local_ai_injection {{/str}}
+        {{/infoonly}}
+        {{#infoonly}}
+            {{#str}} info_aiusage, local_ai_injection {{/str}}
+        {{/infoonly}}
+    {{/title}}
+    {{$body}}
+        <p>
+            {{#str}}confirmaiusage_message, local_ai_injection{{/str}}
+        </p>
+        <div class="local_ai_injection-confirm-content">
+        </div>
+    {{/body}}
+    {{^infoonly}}
+    {{$footer}}
+        <div class="local_ai_injection-confirm-footer d-flex gap-2">
+            <button type="button" class="btn btn-primary w-100" data-action="save">
+                {{#str}} confirmaiusage_confirm, local_ai_injection {{/str}}
+            </button>
+            <button type="button" class="btn btn-outline-secondary" data-action="cancel">
+                {{#str}} confirmaiusage_cancel, local_ai_injection {{/str}}
+            </button>
+        </div>
+    {{/footer}}
+    {{/infoonly}}
+{{/ core/modal }}
