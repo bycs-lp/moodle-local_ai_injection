@@ -24,9 +24,8 @@
  */
 
 $string['aiinjectionplugins'] = 'Subplugin Settings';
-$string['confirmaiusage_cancel'] = 'Cancel';
-$string['confirmaiusage_confirm'] = 'Generate Alttext now';
-$string['confirmaiusage_message'] = 'The selected image will be sent to an external AI-System.';
+$string['close'] = 'Close';
+$string['confirmaiusage_confirm'] = 'Generate Image Description';
 $string['confirmaiusage_title'] = 'AI usage confirmation';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';

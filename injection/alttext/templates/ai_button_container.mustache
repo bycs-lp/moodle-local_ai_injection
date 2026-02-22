@@ -46,6 +46,9 @@ Example context (json):
     <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled>
         {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
     </button>
+    {{#confirmed}}
+        <a href="#" class="ai-alttext-info" title="{{#str}} info_aiusage, local_ai_injection {{/str}}"><i class="fa-solid fa-circle-info"></i></a>
+    {{/confirmed}}
 </div>
 {{/isloading}}
 

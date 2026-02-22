@@ -26,8 +26,11 @@
  */
 import {renderInfoBox} from 'local_ai_manager/infobox';
 import {renderWarningBox} from 'local_ai_manager/warningbox';
-import Modal from 'core/modal';
+import ModalSaveCancel from 'core/modal_save_cancel';
+import ModalCancel from 'core/modal_cancel';
 import ModalEvents from 'core/modal_events';
+import Templates from 'core/templates';
+import {getString} from 'core/str';
 import LocalStorage from 'core/localstorage';
 import {userId} from 'core/config';
 
@@ -67,26 +70,22 @@ export const isAiUsageConfirmed = async() => {
     return LocalStorage.get(key) === '1';
 };
 
-class ConfirmModal extends Modal {
-     static TYPE = 'local_ai_injection/confirm_ai_usage_modal';
-     static TEMPLATE = 'local_ai_injection/confirm_ai_usage_modal';
-
-    configure(modalConfig) {
-        modalConfig.removeOnClose = true;
-        this.registerCloseOnCancel();
-        this.registerCloseOnSave();
-        super.configure(modalConfig);
-    }
-}
+/**
+ * Render the modal body template.
+ *
+ * @returns {Promise<string>} rendered HTML
+ */
+const renderModalBody = () => {
+    return Templates.render('local_ai_injection/confirm_ai_usage_modal', {});
+};
 
 /**
- * Show a confirmation modal for AI usage on first use per session.
+ * Show a confirmation modal for AI usage on first use.
  *
  * @param {string} component the component from which the request is being done
  * @param {array} purposes the purpose to use for the request
  * @returns {Promise<boolean>} True if user confirmed, false if canceled
  */
-
 export const confirmAiUsage = async(component, purposes = []) => {
 
     const storageKey = await getStorageKey();
@@ -95,17 +94,33 @@ export const confirmAiUsage = async(component, purposes = []) => {
         return true;
     }
 
-    const modal = await ConfirmModal.create({show: true, templateContext: {infoonly: false}});
-    const container = modal.getBody()[0].querySelector('.local_ai_injection-confirm-content');
+    const [bodyHtml, title, saveButtonText] = await Promise.all([
+        renderModalBody(),
+        getString('confirmaiusage_title', 'local_ai_injection'),
+        getString('confirmaiusage_confirm', 'local_ai_injection'),
+    ]);
 
-    await renderInfoBox(component, userId, container, purposes);
-    await renderWarningBox(container);
+    const modal = await ModalSaveCancel.create({
+        title,
+        body: bodyHtml,
+        large: true,
+        show: true,
+        removeOnClose: true,
+        buttons: {
+            save: saveButtonText,
+        },
+    });
+
+    const container = modal.getBody()[0].querySelector('.local_ai_injection-confirm-content');
+    await Promise.all([
+        renderInfoBox(component, userId, container, purposes),
+        renderWarningBox(container),
+    ]);
 
     return new Promise(resolve => {
         modal.getRoot().on(ModalEvents.save, () => {
             LocalStorage.set(storageKey, '1');
             resolve(true);
-            modal.destroy();
         });
         modal.getRoot().on(ModalEvents.hidden, () => {
             resolve(false);
@@ -121,9 +136,27 @@ export const confirmAiUsage = async(component, purposes = []) => {
  * @param {array} purposes the purpose to use for the request
  */
 export const showAiInfo = async(component, purposes = []) => {
-    const modal = await ConfirmModal.create({show: true, templateContext: {infoonly: true}});
-    const container = modal.getBody()[0].querySelector('.local_ai_injection-confirm-content');
 
-    await renderInfoBox(component, userId, container, purposes);
-    await renderWarningBox(container);
+    const [bodyHtml, title, closeText] = await Promise.all([
+        renderModalBody(),
+        getString('info_aiusage', 'local_ai_injection'),
+        getString('close', 'local_ai_injection'),
+    ]);
+
+    const modal = await ModalCancel.create({
+        title,
+        body: bodyHtml,
+        large: true,
+        show: true,
+        removeOnClose: true,
+        buttons: {
+            cancel: closeText,
+        },
+    });
+
+    const container = modal.getBody()[0].querySelector('.local_ai_injection-confirm-content');
+    await Promise.all([
+        renderInfoBox(component, userId, container, purposes),
+        renderWarningBox(container),
+    ]);
 };

@@ -182,7 +182,7 @@ const handleButtonClick = async(event) => {
     }
 
     // Show loading state via template.
-    await injectButton(modal, {isloading: true, confirmed: false});
+    await injectButton(modal, {isloading: true, confirmed: true});
 
     try {
         const altText = await generateAltText(image.src);
