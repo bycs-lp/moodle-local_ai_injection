@@ -28,7 +28,7 @@ import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 import Popover from 'theme_boost/bootstrap/popover';
-import {confirmAiUsage, SESSION_KEY, showAiInfo} from 'local_ai_injection/confirm_ai_usage';
+import {confirmAiUsage, isAiUsageConfirmed, showAiInfo} from 'local_ai_injection/confirm_ai_usage';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -248,7 +248,19 @@ const injectButton = async(modal, templateContext = {}) => {
     // Add info icon event listener.
     const info = modal.querySelector('.ai-alttext-info');
     if (info) {
-        info.addEventListener('click', () => showAiInfo('aiinjection_alttext', ['itt']));
+        const openInfoModal = () => {
+            void showAiInfo('aiinjection_alttext', ['itt']);
+        };
+        info.addEventListener('click', (event) => {
+            event.preventDefault();
+            openInfoModal();
+        });
+        info.addEventListener('keydown', (event) => {
+            if (event.key === ' ') {
+                event.preventDefault();
+                openInfoModal();
+            }
+        });
     }
 };
 
@@ -261,9 +273,9 @@ const injectButton = async(modal, templateContext = {}) => {
 const initModalObserver = () => {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
-            mutation.addedNodes.forEach((node) => {
+            mutation.addedNodes.forEach(async(node) => {
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    const confirmed = sessionStorage.getItem(SESSION_KEY) === '1';
+                    const confirmed = await isAiUsageConfirmed();
 
                     // Check if added node is a modal with tiny_image_altentry.
                     if (node.classList?.contains('modal') && node.querySelector('.tiny_image_altentry')) {
@@ -309,13 +321,16 @@ export const init = (config) => {
     initModalObserver();
 
     // Check for existing modals on page load.
-    const confirmed = sessionStorage.getItem(SESSION_KEY) === '1';
-    const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
-    existingModals.forEach(textarea => {
-        const modal = textarea.closest('.modal');
-        if (modal && !initializedModals.has(modal)) {
-            initializedModals.add(modal);
-            injectButton(modal, {confirmed: confirmed});
-        }
+    isAiUsageConfirmed().then(confirmed => {
+        const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
+        existingModals.forEach(textarea => {
+            const modal = textarea.closest('.modal');
+            if (modal && !initializedModals.has(modal)) {
+                initializedModals.add(modal);
+                injectButton(modal, {confirmed: confirmed});
+            }
+        });
     });
 };
+
+

@@ -28,9 +28,44 @@ import {renderInfoBox} from 'local_ai_manager/infobox';
 import {renderWarningBox} from 'local_ai_manager/warningbox';
 import Modal from 'core/modal';
 import ModalEvents from 'core/modal_events';
+import LocalStorage from 'core/localstorage';
 import {userId} from 'core/config';
 
-export const SESSION_KEY = 'local_ai_injection_ai_confirmed';
+const STORAGE_KEY_PREFIX = 'local_ai_injection_ai_confirmed_';
+
+/**
+ * Hash a string using SHA-256.
+ *
+ * @param {string} stringToHash the string to hash
+ * @returns {Promise<string>} hex representation of the SHA-256 hash
+ */
+const hash = async(stringToHash) => {
+    const data = new TextEncoder().encode(stringToHash);
+    const hashAsArrayBuffer = await window.crypto.subtle.digest('SHA-256', data);
+    const uint8ViewOfHash = new Uint8Array(hashAsArrayBuffer);
+    return Array.from(uint8ViewOfHash)
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+};
+
+/**
+ * Get the hashed storage key for the current user.
+ *
+ * @returns {Promise<string>} hashed storage key
+ */
+const getStorageKey = async() => {
+    return hash(STORAGE_KEY_PREFIX + userId);
+};
+
+/**
+ * Check if the user has already confirmed AI usage.
+ *
+ * @returns {Promise<boolean>} true if confirmed
+ */
+export const isAiUsageConfirmed = async() => {
+    const key = await getStorageKey();
+    return LocalStorage.get(key) === '1';
+};
 
 class ConfirmModal extends Modal {
      static TYPE = 'local_ai_injection/confirm_ai_usage_modal';
@@ -54,7 +89,9 @@ class ConfirmModal extends Modal {
 
 export const confirmAiUsage = async(component, purposes = []) => {
 
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
+    const storageKey = await getStorageKey();
+
+    if (LocalStorage.get(storageKey) === '1') {
         return true;
     }
 
@@ -66,7 +103,7 @@ export const confirmAiUsage = async(component, purposes = []) => {
 
     return new Promise(resolve => {
         modal.getRoot().on(ModalEvents.save, () => {
-            sessionStorage.setItem(SESSION_KEY, '1');
+            LocalStorage.set(storageKey, '1');
             resolve(true);
             modal.destroy();
         });
