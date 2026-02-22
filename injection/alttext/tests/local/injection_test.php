@@ -150,7 +150,7 @@ final class injection_test extends advanced_testcase {
 
         // Prompt should contain a language name (e.g., "English").
         // The exact language depends on the test environment, but it should be there.
-        $this->assertMatchesRegularExpression('/language: [A-Z][a-z]+/', $config['prompt']);
+        $this->assertMatchesRegularExpression('/Language: [A-Z][a-z]+/', $config['prompt']);
     }
 
     /**
