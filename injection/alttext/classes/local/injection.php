@@ -41,7 +41,7 @@ class injection extends base_injection {
         '- Return ONLY the alt text, nothing else.' . "\n" .
         '- One single result, no alternatives.' . "\n" .
         '- No explanations, no prefixes, no quotation marks.' . "\n" .
-        '- Language: {LANGUAGE}.' . "\n" .
+        '- Output language: {LANGUAGE}.' . "\n" .
         '- Maximum 150 characters.' . "\n" .
         '- Factual and concise, understandable for visually impaired people.';
 

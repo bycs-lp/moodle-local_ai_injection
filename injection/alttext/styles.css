@@ -29,11 +29,6 @@
     color: #6c757d;
 }
 
-/* Info icon clickable indicator */
-.ai-alttext-info {
-    cursor: pointer;
-}
-
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .ai-alttext-button {

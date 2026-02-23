@@ -71,15 +71,6 @@ export const isAiUsageConfirmed = async() => {
 };
 
 /**
- * Render the modal body template.
- *
- * @returns {Promise<string>} rendered HTML
- */
-const renderModalBody = () => {
-    return Templates.render('local_ai_injection/confirm_ai_usage_modal', {});
-};
-
-/**
  * Show a confirmation modal for AI usage on first use.
  *
  * @param {string} component the component from which the request is being done
@@ -95,7 +86,7 @@ export const confirmAiUsage = async(component, purposes = []) => {
     }
 
     const [bodyHtml, title, saveButtonText] = await Promise.all([
-        renderModalBody(),
+        Templates.render('local_ai_injection/confirm_ai_usage_modal', {}),
         getString('confirmaiusage_title', 'local_ai_injection'),
         getString('confirmaiusage_confirm', 'local_ai_injection'),
     ]);
@@ -138,7 +129,7 @@ export const confirmAiUsage = async(component, purposes = []) => {
 export const showAiInfo = async(component, purposes = []) => {
 
     const [bodyHtml, title, closeText] = await Promise.all([
-        renderModalBody(),
+        Templates.render('local_ai_injection/confirm_ai_usage_modal', {}),
         getString('info_aiusage', 'local_ai_injection'),
         getString('close', 'local_ai_injection'),
     ]);

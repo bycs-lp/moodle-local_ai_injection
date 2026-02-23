@@ -249,7 +249,7 @@ const injectButton = async(modal, templateContext = {}) => {
     const info = modal.querySelector('.ai-alttext-info');
     if (info) {
         const openInfoModal = () => {
-            void showAiInfo('aiinjection_alttext', ['itt']);
+            showAiInfo('aiinjection_alttext', ['itt']);
         };
         info.addEventListener('click', (event) => {
             event.preventDefault();
@@ -281,7 +281,7 @@ const initModalObserver = () => {
                     if (node.classList?.contains('modal') && node.querySelector('.tiny_image_altentry')) {
                         if (!initializedModals.has(node)) {
                             initializedModals.add(node);
-                            injectButton(node, {confirmed: confirmed});
+                            injectButton(node, {confirmed});
                         }
                     }
                     // Check if added node contains a modal with tiny_image_altentry.
@@ -290,7 +290,7 @@ const initModalObserver = () => {
                         const modalElement = altentry.closest('.modal');
                         if (modalElement && !initializedModals.has(modalElement)) {
                             initializedModals.add(modalElement);
-                            injectButton(modalElement, {confirmed: confirmed});
+                            injectButton(modalElement, {confirmed});
                         }
                     }
                 }
@@ -309,7 +309,7 @@ const initModalObserver = () => {
  *
  * @param {Object} config Configuration object from PHP containing aiconfig and contextid
  */
-export const init = (config) => {
+export const init = async(config) => {
     // Store AI configuration for later use.
     aiConfig = config.aiconfig;
     // Store context ID for AI requests (required for proper permission checks).
@@ -321,15 +321,14 @@ export const init = (config) => {
     initModalObserver();
 
     // Check for existing modals on page load.
-    isAiUsageConfirmed().then(confirmed => {
-        const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
-        existingModals.forEach(textarea => {
-            const modal = textarea.closest('.modal');
-            if (modal && !initializedModals.has(modal)) {
-                initializedModals.add(modal);
-                injectButton(modal, {confirmed: confirmed});
-            }
-        });
+    const confirmed = await isAiUsageConfirmed();
+    const existingModals = document.querySelectorAll('.modal .tiny_image_altentry');
+    existingModals.forEach(textarea => {
+        const modal = textarea.closest('.modal');
+        if (modal && !initializedModals.has(modal)) {
+            initializedModals.add(modal);
+            injectButton(modal, {confirmed});
+        }
     });
 };
 
