@@ -1,0 +1,6 @@
+.local_ai_injection-info-content .local_ai_manager-infobox,
+.local_ai_injection-info-content .local_ai_manager-info-warning {
+    color: var(--bs-secondary-color);
+    font-size: inherit;
+    line-height: 1.6;
+}

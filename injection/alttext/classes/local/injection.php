@@ -36,10 +36,14 @@ class injection extends base_injection {
      * The prompt template for AI alt text generation.
      * {LANGUAGE} placeholder will be replaced with the user's language name in English.
      */
-    public const PROMPT_TEMPLATE = 'Generate a precise alt text for the image in the following language: {LANGUAGE}. ' .
-        'Describe briefly and factually what is seen in the image. ' .
-        'The alt text should be understandable for visually impaired people. ' .
-        'Do not use any special characters, especially no quotes.';
+    public const PROMPT_TEMPLATE = 'You are an alt text generator. ' .
+        'Your output will be directly inserted into an HTML alt attribute.' . "\n" .
+        '- Return ONLY the alt text, nothing else.' . "\n" .
+        '- One single result, no alternatives.' . "\n" .
+        '- No explanations, no prefixes, no quotation marks.' . "\n" .
+        '- Output language: {LANGUAGE}.' . "\n" .
+        '- Maximum 150 characters.' . "\n" .
+        '- Factual and concise, understandable for visually impaired people.';
 
     /** @var ai_manager_wrapper The AI manager wrapper instance. */
     private ai_manager_wrapper $aimanagerwrapper;

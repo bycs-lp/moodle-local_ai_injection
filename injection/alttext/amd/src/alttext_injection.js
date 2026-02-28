@@ -28,6 +28,7 @@ import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 import Popover from 'theme_boost/bootstrap/popover';
+import {showAiInfo} from 'local_ai_injection/ai_usage_info';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -211,10 +212,10 @@ const injectButton = async(modal, templateContext = {}) => {
         return;
     }
 
-    // Remove existing button if present.
-    const existingButton = modal.querySelector('[data-action="generate-alttext"]');
-    if (existingButton) {
-        existingButton.remove();
+    // Remove existing button container if present.
+    const existingContainer = modal.querySelector('.ai-button-container');
+    if (existingContainer) {
+        existingContainer.remove();
     }
 
     // Add disabled state to template context if purpose is disabled.
@@ -237,6 +238,24 @@ const injectButton = async(modal, templateContext = {}) => {
     const button = modal.querySelector('[data-action="generate-alttext"]');
     if (button && !isAiDisabled()) {
         button.addEventListener('click', handleButtonClick);
+    }
+
+    // Add info hint event listener.
+    const info = modal.querySelector('.ai-alttext-info');
+    if (info) {
+        const openInfoModal = () => {
+            showAiInfo('aiinjection_alttext', ['itt']);
+        };
+        info.addEventListener('click', (event) => {
+            event.preventDefault();
+            openInfoModal();
+        });
+        info.addEventListener('keydown', (event) => {
+            if (event.key === ' ') {
+                event.preventDefault();
+                openInfoModal();
+            }
+        });
     }
 };
 
@@ -283,7 +302,7 @@ const initModalObserver = () => {
  *
  * @param {Object} config Configuration object from PHP containing aiconfig and contextid
  */
-export const init = (config) => {
+export const init = async(config) => {
     // Store AI configuration for later use.
     aiConfig = config.aiconfig;
     // Store context ID for AI requests (required for proper permission checks).

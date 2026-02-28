@@ -112,9 +112,9 @@ final class injection_test extends advanced_testcase {
         // Template should contain the {LANGUAGE} placeholder.
         $this->assertStringContainsString('{LANGUAGE}', $template);
 
-        // Template should be in English (contains key English phrases).
-        $this->assertStringContainsString('Generate a precise alt text', $template);
-        $this->assertStringContainsString('visually impaired', $template);
+        // Template should contain key phrases from the prompt.
+        $this->assertStringContainsString('You are an alt text generator', $template);
+        $this->assertStringContainsString('Return ONLY the alt text', $template);
     }
 
     /**
@@ -146,11 +146,11 @@ final class injection_test extends advanced_testcase {
         $this->assertStringNotContainsString('{LANGUAGE}', $config['prompt']);
 
         // Prompt should contain key phrases from the template.
-        $this->assertStringContainsString('Generate a precise alt text', $config['prompt']);
+        $this->assertStringContainsString('You are an alt text generator', $config['prompt']);
 
         // Prompt should contain a language name (e.g., "English").
         // The exact language depends on the test environment, but it should be there.
-        $this->assertMatchesRegularExpression('/language: [A-Z][a-z]+/', $config['prompt']);
+        $this->assertMatchesRegularExpression('/Output language: [A-Z][a-z]+/', $config['prompt']);
     }
 
     /**

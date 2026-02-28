@@ -24,10 +24,12 @@
  */
 
 $string['aiinjectionplugins'] = 'Subplugin Settings';
+$string['close'] = 'Close';
 $string['disabled'] = 'Disabled';
 $string['enable_subplugin'] = 'Enable {$a}';
 $string['enabled'] = 'Enabled';
 $string['generalsettings'] = 'General settings';
+$string['info_aiusage'] = 'AI usage information';
 $string['installedsubplugins'] = 'Installed AI Injection Subplugins:';
 $string['managesubplugins'] = 'Manage Subplugins';
 $string['no_subplugins'] = 'No AI injection subplugins are currently installed.';

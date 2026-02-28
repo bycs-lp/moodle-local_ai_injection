@@ -40,22 +40,38 @@ Example context (json):
 }}
 
 {{#isloading}}
-<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled>
-    {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
-</button>
+<div class="mt-2 ai-button-container">
+    <div class="ai-alttext-info-note text-muted">
+        <span>{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
+        <a href="#" class="ai-alttext-info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        </a>
+    </div>
+    <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled>
+        {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
+    </button>
+</div>
 {{/isloading}}
 
 {{^isloading}}
+<div class="mt-2 ai-button-container">
+    <div class="ai-alttext-info-note text-muted">
+        <span>{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
+        <a href="#" class="ai-alttext-info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        </a>
+    </div>
 {{#isdisabled}}
-<span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
-    <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext" disabled style="pointer-events: none;">
-        {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
-    </button>
-</span>
+    <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
+        <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled style="pointer-events: none;">
+            {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+        </button>
+    </span>
 {{/isdisabled}}
 {{^isdisabled}}
-<button type="button" class="btn btn-sm btn-secondary ai-alttext-btn mt-2 w-100" data-action="generate-alttext">
-    {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
-</button>
+    <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext">
+        {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
+    </button>
 {{/isdisabled}}
+</div>
 {{/isloading}}
