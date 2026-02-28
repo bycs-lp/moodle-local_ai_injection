@@ -30,30 +30,31 @@ Context variables required for this template:
 * loadingtext (optional) - Custom loading text
 * isdisabled (optional) - Boolean flag to show disabled state
 * disabledreason (optional) - Reason why the button is disabled
-* confirmed (optional) - Boolean flag to show info icon (user has confirmed AI usage)
 
 Example context (json):
 {
     "isloading": false,
     "isdisabled": false,
-    "disabledreason": "",
-    "confirmed": false
+    "disabledreason": ""
 }
 }}
 
 {{#isloading}}
-<div class="mt-2 ai-button-container d-flex gap-2 align-items-center">
+<div class="mt-2 ai-button-container">
+    <div class="ai-alttext-info-note text-muted">
+        <a href="#" class="ai-alttext-info">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</a>
+    </div>
     <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled>
         {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
     </button>
-    {{#confirmed}}
-        <a href="#" class="ai-alttext-info" title="{{#str}} info_aiusage, local_ai_injection {{/str}}"><i class="fa-solid fa-circle-info"></i></a>
-    {{/confirmed}}
 </div>
 {{/isloading}}
 
 {{^isloading}}
-<div class="mt-2 ai-button-container d-flex gap-2 align-items-center">
+<div class="mt-2 ai-button-container">
+    <div class="ai-alttext-info-note text-muted">
+        <a href="#" class="ai-alttext-info">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</a>
+    </div>
 {{#isdisabled}}
     <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
         <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled style="pointer-events: none;">
@@ -66,8 +67,5 @@ Example context (json):
         {{#pix}}icon, local_ai_injection{{/pix}} {{#str}} generatealttext, aiinjection_alttext {{/str}}
     </button>
 {{/isdisabled}}
-{{#confirmed}}
-    <a href="#" class="ai-alttext-info" title="{{#str}} info_aiusage, local_ai_injection {{/str}}"><i class="fa-solid fa-circle-info"></i></a>
-{{/confirmed}}
 </div>
 {{/isloading}}

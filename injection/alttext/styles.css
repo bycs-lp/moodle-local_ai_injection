@@ -29,6 +29,16 @@
     color: #6c757d;
 }
 
+.ai-alttext-info-note {
+    margin-bottom: 0.35rem;
+    font-size: 0.875rem;
+}
+
+.ai-alttext-info {
+    white-space: nowrap;
+    font-size: inherit;
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .ai-alttext-button {

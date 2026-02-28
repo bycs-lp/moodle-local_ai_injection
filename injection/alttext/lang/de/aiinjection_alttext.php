@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['aiusagehint'] = 'Vorsicht: KI-Nutzung - Hinweise beachten!';
 $string['alttext:use'] = 'KI-Alternativtext-Generierung verwenden';
 $string['generatealttext'] = 'Bildbeschreibung generieren';
 $string['generateerror'] = 'Fehler beim Generieren der Bildbeschreibung. Bitte versuchen Sie es erneut.';

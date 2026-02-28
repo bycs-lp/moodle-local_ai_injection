@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['aiusagehint'] = 'Caution: AI-Usage - review notes!';
 $string['alttext:use'] = 'Use AI Alt Text generation';
 $string['generatealttext'] = 'Generate Image Description';
 $string['generateerror'] = 'Error generating image description. Please try again.';

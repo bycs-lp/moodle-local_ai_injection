@@ -8,26 +8,22 @@ This plugin provides a framework for developing AI-based subplugins that can aut
 
 Subplugins inherit from `base_injection` and implement abstract methods to define when and what JavaScript to inject.
 
-## Using the AI Usage Confirmation Modal
+## Using the AI Usage Info Modal
 
-`local_ai_injection` provides a general-purpose confirmation and info modal for
-AI features. Subplugins can use it directly without reimplementing the UX.
+`local_ai_injection` provides a general-purpose info modal for AI features.
+Subplugins can use it to show AI usage hints (infobox + warningbox from
+`local_ai_manager`) without reimplementing the UX.
 
 **Import:**
 ```javascript
-import {confirmAiUsage, isAiUsageConfirmed, showAiInfo} from 'local_ai_injection/confirm_ai_usage';
+import {showAiInfo} from 'local_ai_injection/ai_usage_info';
 ```
 
-**`confirmAiUsage(component, purposes)`**
-Shows a confirmation modal on first use. Returns `true` if the user confirmed,
-`false` if cancelled. Subsequent calls return `true` directly (localStorage-based).
-
-**`isAiUsageConfirmed()`**
-Async check whether the user has already confirmed. Use on page load to
-determine initial UI state (e.g. whether to show the info icon).
-
 **`showAiInfo(component, purposes)`**
-Shows an info-only modal (no confirmation required).
+Shows an info-only modal with AI usage hints (infobox + warningbox).
+
+- `component`: Plugin name, e.g. `'aiinjection_alttext'`
+- `purposes`: Array of purpose keys, e.g. `['itt']`
 
 See `injection/alttext` for a complete reference implementation.
 

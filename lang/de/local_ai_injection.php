@@ -25,8 +25,6 @@
 
 $string['aiinjectionplugins'] = 'Subplugin-Einstellungen';
 $string['close'] = 'Schließen';
-$string['confirmaiusage_confirm'] = 'Bildbeschreibung generieren';
-$string['confirmaiusage_title'] = 'Nutzung von KI bestätigen';
 $string['disabled'] = 'Deaktiviert';
 $string['enable_subplugin'] = '{$a} aktivieren';
 $string['enabled'] = 'Aktiviert';
