@@ -42,7 +42,10 @@ Example context (json):
 {{#isloading}}
 <div class="mt-2 ai-button-container">
     <div class="ai-alttext-info-note text-muted">
-        <a href="#" class="ai-alttext-info">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</a>
+        <span>{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
+        <a href="#" class="ai-alttext-info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        </a>
     </div>
     <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled>
         {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
@@ -53,7 +56,10 @@ Example context (json):
 {{^isloading}}
 <div class="mt-2 ai-button-container">
     <div class="ai-alttext-info-note text-muted">
-        <a href="#" class="ai-alttext-info">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</a>
+        <span>{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
+        <a href="#" class="ai-alttext-info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+        </a>
     </div>
 {{#isdisabled}}
     <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
