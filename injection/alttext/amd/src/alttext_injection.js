@@ -213,7 +213,7 @@ const injectButton = async(modal, templateContext = {}) => {
     }
 
     // Remove existing button container if present.
-    const existingContainer = modal.querySelector('.ai-button-container');
+    const existingContainer = modal.querySelector('[data-aiinjection-alttext-container]');
     if (existingContainer) {
         existingContainer.remove();
     }
@@ -241,7 +241,7 @@ const injectButton = async(modal, templateContext = {}) => {
     }
 
     // Add info hint event listener.
-    const info = modal.querySelector('.ai-alttext-info');
+    const info = modal.querySelector('[data-aiinjection-alttext-info-trigger]');
     if (info) {
         const openInfoModal = () => {
             showAiInfo('aiinjection_alttext', ['itt']);

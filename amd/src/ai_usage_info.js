@@ -20,7 +20,7 @@
  *
  * @module     local_ai_injection/ai_usage_info
  * @copyright  2026 ISB Bayern
- * @author     Thomas Sch\u00f6nlein
+ * @author     Thomas Schönlein
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 import {renderInfoBox} from 'local_ai_manager/infobox';
@@ -55,7 +55,7 @@ export const showAiInfo = async(component, purposes = []) => {
         },
     });
 
-    const container = modal.getBody()[0].querySelector('.local_ai_injection-info-content');
+    const container = modal.getBody()[0].querySelector('[data-local-ai-injection-info-content]');
     await Promise.all([
         renderInfoBox(component, userId, container, purposes),
         renderWarningBox(container),

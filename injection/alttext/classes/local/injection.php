@@ -37,12 +37,12 @@ class injection extends base_injection {
      * {LANGUAGE} placeholder will be replaced with the user's language name in English.
      */
     public const PROMPT_TEMPLATE = 'You are an alt text generator. ' .
-        'Your output will be directly inserted into an HTML alt attribute.' . "\n" .
-        '- Return ONLY the alt text, nothing else.' . "\n" .
-        '- One single result, no alternatives.' . "\n" .
-        '- No explanations, no prefixes, no quotation marks.' . "\n" .
-        '- Output language: {LANGUAGE}.' . "\n" .
-        '- Maximum 150 characters.' . "\n" .
+        'Your output will be directly inserted into an HTML alt attribute.' . PHP_EOL .
+        '- Return ONLY the alt text, nothing else.' . PHP_EOL .
+        '- One single result, no alternatives.' . PHP_EOL .
+        '- No explanations, no prefixes, no quotation marks.' . PHP_EOL .
+        '- Output language: {LANGUAGE}.' . PHP_EOL .
+        '- Maximum 150 characters.' . PHP_EOL .
         '- Factual and concise, understandable for visually impaired people.';
 
     /** @var ai_manager_wrapper The AI manager wrapper instance. */
