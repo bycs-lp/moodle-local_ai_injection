@@ -61,6 +61,11 @@
     text-decoration: none;
 }
 
+.ai-alttext-btn img {
+    color: var(--color-secondary-font);
+    background-color: transparent;
+}
+
 /* Responsive adjustments for mobile */
 @media (max-width: 768px) {
     .ai-alttext-btn {
