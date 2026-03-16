@@ -25,10 +25,6 @@
     cursor: not-allowed;
 }
 
-.ai-alttext-btn .fa-magic {
-    color: #6c757d;
-}
-
 .aiinjection-alttext-container {
     display: flex;
     flex-direction: column;
@@ -56,11 +52,6 @@
     color: var(--bs-info);
     line-height: 1;
     text-decoration: none;
-}
-
-.ai-alttext-btn img {
-    color: var(--color-secondary-font);
-    background-color: transparent;
 }
 
 /* Responsive adjustments for mobile */
