@@ -40,13 +40,13 @@ Example context (json):
 }}
 
 {{#isloading}}
-<div class="mt-2 aiinjection-alttext-container" data-aiinjection-alttext-container>
+<div class="mt-2 aiinjection-alttext-container" data-aiinjection_alttext-container="main">
     <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled>
         {{#pix}}y/loading, core{{/pix}} {{#loadingtext}}{{loadingtext}}{{/loadingtext}}{{^loadingtext}}{{#str}} generating, aiinjection_alttext {{/str}}...{{/loadingtext}}
     </button>
     <div class="aiinjection-alttext-info-note text-danger">
         <span class="aiinjection-alttext-info-note-text">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
-        <a href="#" class="aiinjection-alttext-info-link" data-aiinjection-alttext-info-trigger aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}" title="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+        <a href="#" class="aiinjection-alttext-info-link" data-aiinjection_alttext-trigger="info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}" title="{{#str}} info_aiusage, local_ai_injection {{/str}}">
             <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
         </a>
     </div>
@@ -54,7 +54,7 @@ Example context (json):
 {{/isloading}}
 
 {{^isloading}}
-<div class="mt-2 aiinjection-alttext-container" data-aiinjection-alttext-container>
+<div class="mt-2 aiinjection-alttext-container" data-aiinjection_alttext-container="main">
 {{#isdisabled}}
     <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="top" title="{{disabledreason}}">
         <button type="button" class="btn btn-sm btn-secondary ai-alttext-btn w-100" data-action="generate-alttext" disabled style="pointer-events: none;">
@@ -68,7 +68,7 @@ Example context (json):
     </button>
     <div class="aiinjection-alttext-info-note text-danger">
         <span class="aiinjection-alttext-info-note-text">{{#str}} aiusagehint, aiinjection_alttext {{/str}}</span>
-        <a href="#" class="aiinjection-alttext-info-link" data-aiinjection-alttext-info-trigger aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}" title="{{#str}} info_aiusage, local_ai_injection {{/str}}">
+        <a href="#" class="aiinjection-alttext-info-link" data-aiinjection_alttext-trigger="info" aria-label="{{#str}} info_aiusage, local_ai_injection {{/str}}" title="{{#str}} info_aiusage, local_ai_injection {{/str}}">
             <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
         </a>
     </div>

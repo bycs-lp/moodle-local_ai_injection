@@ -55,7 +55,7 @@ export const showAiInfo = async(component, purposes = []) => {
         },
     });
 
-    const container = modal.getBody()[0].querySelector('[data-local-ai-injection-info-content]');
+    const container = modal.getBody()[0].querySelector('[data-local_ai_injection-container="infocontent"]');
     await Promise.all([
         renderInfoBox(component, userId, container, purposes),
         renderWarningBox(container),

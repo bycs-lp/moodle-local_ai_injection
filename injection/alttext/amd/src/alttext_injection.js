@@ -42,6 +42,9 @@ let contextId = 0;
 /** @type {string} Complete prompt from PHP with language already inserted */
 let prompt = '';
 
+/** @type {boolean} Prevent registering duplicate modal observers */
+let modalObserverInitialized = false;
+
 /**
  * Check if AI purpose is disabled.
  *
@@ -213,7 +216,7 @@ const injectButton = async(modal, templateContext = {}) => {
     }
 
     // Remove existing button container if present.
-    const existingContainer = modal.querySelector('[data-aiinjection-alttext-container]');
+    const existingContainer = modal.querySelector('[data-aiinjection_alttext-container="main"]');
     if (existingContainer) {
         existingContainer.remove();
     }
@@ -241,7 +244,7 @@ const injectButton = async(modal, templateContext = {}) => {
     }
 
     // Add info hint event listener.
-    const info = modal.querySelector('[data-aiinjection-alttext-info-trigger]');
+    const info = modal.querySelector('[data-aiinjection_alttext-trigger="info"]');
     if (info) {
         const openInfoModal = () => {
             showAiInfo('aiinjection_alttext', ['itt']);
@@ -266,6 +269,11 @@ const injectButton = async(modal, templateContext = {}) => {
  * Uses WeakSet to track initialized modals and prevent duplicate listeners.
  */
 const initModalObserver = () => {
+    if (modalObserverInitialized) {
+        return;
+    }
+    modalObserverInitialized = true;
+
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {
@@ -302,7 +310,7 @@ const initModalObserver = () => {
  *
  * @param {Object} config Configuration object from PHP containing aiconfig and contextid
  */
-export const init = async(config) => {
+export const init = (config) => {
     // Store AI configuration for later use.
     aiConfig = config.aiconfig;
     // Store context ID for AI requests (required for proper permission checks).
