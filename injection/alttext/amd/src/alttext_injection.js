@@ -28,6 +28,7 @@ import {alert as moodleAlert} from 'core/notification';
 import {makeRequest} from 'local_ai_manager/make_request';
 import Templates from 'core/templates';
 import Popover from 'theme_boost/bootstrap/popover';
+import {showAiInfo} from 'local_ai_injection/ai_usage_info';
 
 /** @type {WeakSet} Track modals that have been initialized to prevent duplicate listeners */
 const initializedModals = new WeakSet();
@@ -40,6 +41,9 @@ let contextId = 0;
 
 /** @type {string} Complete prompt from PHP with language already inserted */
 let prompt = '';
+
+/** @type {boolean} Prevent registering duplicate modal observers */
+let modalObserverInitialized = false;
 
 /**
  * Check if AI purpose is disabled.
@@ -211,10 +215,10 @@ const injectButton = async(modal, templateContext = {}) => {
         return;
     }
 
-    // Remove existing button if present.
-    const existingButton = modal.querySelector('[data-action="generate-alttext"]');
-    if (existingButton) {
-        existingButton.remove();
+    // Remove existing button container if present.
+    const existingContainer = modal.querySelector('[data-aiinjection_alttext-container="main"]');
+    if (existingContainer) {
+        existingContainer.remove();
     }
 
     // Add disabled state to template context if purpose is disabled.
@@ -238,6 +242,24 @@ const injectButton = async(modal, templateContext = {}) => {
     if (button && !isAiDisabled()) {
         button.addEventListener('click', handleButtonClick);
     }
+
+    // Add info hint event listener.
+    const info = modal.querySelector('[data-aiinjection_alttext-trigger="info"]');
+    if (info) {
+        const openInfoModal = () => {
+            showAiInfo('aiinjection_alttext', ['itt']);
+        };
+        info.addEventListener('click', (event) => {
+            event.preventDefault();
+            openInfoModal();
+        });
+        info.addEventListener('keydown', (event) => {
+            if (event.key === ' ') {
+                event.preventDefault();
+                openInfoModal();
+            }
+        });
+    }
 };
 
 /**
@@ -247,6 +269,11 @@ const injectButton = async(modal, templateContext = {}) => {
  * Uses WeakSet to track initialized modals and prevent duplicate listeners.
  */
 const initModalObserver = () => {
+    if (modalObserverInitialized) {
+        return;
+    }
+    modalObserverInitialized = true;
+
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             mutation.addedNodes.forEach((node) => {

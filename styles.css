@@ -1,0 +1,19 @@
+.local_ai_injection-info-content .local_ai_manager-infobox,
+.local_ai_injection-info-content .local_ai_manager-info-warning {
+    width: 100%;
+    color: var(--color-secondary-font);
+    font-size: inherit;
+    line-height: 1.6;
+}
+
+.local_ai_injection-info-content .local_ai_manager-infobox_text,
+.local_ai_injection-info-content .local_ai_manager-info-warning-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.local_ai_injection-info-content .local_ai_manager-infobox a,
+.local_ai_injection-info-content .local_ai_manager-info-warning-link {
+    margin-left: auto;
+    flex-shrink: 0;
+}

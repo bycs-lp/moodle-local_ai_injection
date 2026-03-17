@@ -24,10 +24,12 @@
  */
 
 $string['aiinjectionplugins'] = 'Subplugin-Einstellungen';
+$string['close'] = 'Schließen';
 $string['disabled'] = 'Deaktiviert';
 $string['enable_subplugin'] = '{$a} aktivieren';
 $string['enabled'] = 'Aktiviert';
 $string['generalsettings'] = 'Allgemeine Einstellungen';
+$string['info_aiusage'] = 'Informationen zur KI-Nutzung';
 $string['installedsubplugins'] = 'Installierte KI-Injection Subplugins:';
 $string['managesubplugins'] = 'Subplugins verwalten';
 $string['no_subplugins'] = 'Derzeit sind keine KI-Injection Subplugins installiert.';
