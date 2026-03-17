@@ -51,6 +51,7 @@ export const showAiInfo = async(component, purposes = []) => {
         show: true,
         removeOnClose: true,
         buttons: {
+            // It's basically a confirmation modal, so we do not want the default "Cancel" text on the button.
             cancel: closeText,
         },
     });
@@ -58,6 +59,6 @@ export const showAiInfo = async(component, purposes = []) => {
     const container = modal.getBody()[0].querySelector('[data-local_ai_injection-container="infocontent"]');
     await Promise.all([
         renderInfoBox(component, userId, container, purposes),
-        renderWarningBox(container),
+        renderWarningBox(container)
     ]);
 };
