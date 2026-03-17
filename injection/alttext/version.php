@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'aiinjection_alttext';
-$plugin->version = 2026020900;
+$plugin->version = 2026031700;
 $plugin->requires = 2025041400; // Moodle 5.0+.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '0.1';
+$plugin->release = '0.2';
