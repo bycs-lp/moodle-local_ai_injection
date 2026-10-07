@@ -33,11 +33,13 @@ class ai_manager_wrapper {
      *
      * @param stdClass $user The user object
      * @param int $contextid The context ID
-     * @param string|null $component The component (optional)
+     * @param string|null $tenant The tenant identifier, null to use the tenant of the current user (recommended). Passing a
+     *  tenant sets it as current tenant of the local_ai_manager for the rest of the PHP process (outside of web services it is
+     *  not being reset automatically, e.g. in cron), so the caller has to check the access to the tenant.
      * @param array $purposes The purposes to check
      * @return array The AI configuration
      */
-    public function get_ai_config(stdClass $user, int $contextid, ?string $component, array $purposes): array {
-        return ai_manager_utils::get_ai_config($user, $contextid, $component, $purposes);
+    public function get_ai_config(stdClass $user, int $contextid, ?string $tenant, array $purposes): array {
+        return ai_manager_utils::get_ai_config($user, $contextid, $tenant, $purposes);
     }
 }
