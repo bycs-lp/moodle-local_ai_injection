@@ -1,7 +1,7 @@
 .local_ai_injection-info-content .local_ai_manager-infobox,
 .local_ai_injection-info-content .local_ai_manager-info-warning {
     width: 100%;
-    color: var(--color-secondary-font);
+    color: var(--mds-text-default, var(--bs-body-color));
     font-size: inherit;
     line-height: 1.6;
 }
